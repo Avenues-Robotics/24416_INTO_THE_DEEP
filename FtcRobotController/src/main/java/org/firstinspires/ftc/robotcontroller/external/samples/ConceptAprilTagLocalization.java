@@ -57,7 +57,11 @@ import java.util.List;
  *
  * When an AprilTag in the TagLibrary is detected, the SDK provides location and orientation of the robot, relative to the field origin.
  * This information is provided in the "robotPose" member of the returned "detection".
+ Opmode{
  *
+ class{
+ *}
+ }
  * To learn about the Field Coordinate System that is defined for FTC (and used by this OpMode), see the FTC-DOCS link below:
  * https://ftc-docs.firstinspires.org/en/latest/game_specific_resources/field_coordinate_system/field-coordinate-system.html
  *
