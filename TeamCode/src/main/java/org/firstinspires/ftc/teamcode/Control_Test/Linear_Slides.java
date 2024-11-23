@@ -1,4 +1,4 @@
-package Control_Test;
+package org.firstinspires.ftc.teamcode.Control_Test;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -21,16 +21,16 @@ public class Linear_Slides extends LinearOpMode {
     Telemetry dashboardTelemetry = dashboard.getTelemetry();
 
     public static double targetPosition = 0;
-    public static double KpL = 0;
-    public static double KpR = 0;
+    public static double KpL = 0.015;
+    public static double KpR = 0.015;
     public static double KiR = 0;
     public static double KiL = 0;
     public static double KdR = 0;
     public static double KdL = 0;
     public static double KfR = 0.175;
     public static double KfL = 0.175;
-    public static double toleranceL = 5;
-    public static double toleranceR = 5;
+    public static double toleranceL = 10;
+    public static double toleranceR = 10;
 
 
 

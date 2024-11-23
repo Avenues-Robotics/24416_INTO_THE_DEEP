@@ -49,7 +49,7 @@ public class PIDF {
         if(Math.abs(error) > tolerance){
             derivitive = (error - lastError)/timer.seconds();
             integralSum = integralSum + (error * timer.seconds());
-            output = (integralSum*Ki)+(derivitive*Kd)+(error*Kp)+Kf;
+            output = (error*Kp) + (integralSum*Ki) + (derivitive*Kd) + Kf;
             lastError = error;
             timer.reset();
         }
@@ -59,6 +59,10 @@ public class PIDF {
 
         return output;
 
+    }
+
+    public void setKf(double newKf){
+        this.Kf = newKf;
     }
 
 }
