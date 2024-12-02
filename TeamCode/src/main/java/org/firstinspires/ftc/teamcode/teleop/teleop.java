@@ -29,12 +29,18 @@
 
 package org.firstinspires.ftc.teamcode.teleop;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.hardware.Slides;
+import org.firstinspires.ftc.teamcode.utilities.PIDF;
 
 /*
  * This file contains an example of a Linear "OpMode".
@@ -71,17 +77,47 @@ public class teleop extends LinearOpMode {
     // Declare OpMode members for each of the 4 motors.
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor FL = null;
+    private DcMotor armRotateR;
+    private DcMotor armRotateL;
+
     private DcMotor BL = null;
     private DcMotor FR = null;
     private DcMotor BR = null;
+    PIDF intakePIDF;
+    PIDF outakePIDF;
+    FtcDashboard dashboard = FtcDashboard.getInstance();
+    Telemetry dashboardTelemetry = dashboard.getTelemetry();
+    //adjust the Kp Ki Kf Kd to diffrent things based opon if it needs to go forward or back
+
+    String state;
+    public static double targetposition = 0;
+
+    public static double intake_Kp = 0.0105;
+    public static double intake_Ki = 0;
+    public static double intake_Kd = 0.0015;
+    public static double intake_Kf = 0;
+
+    public static double outtake_Kp = 0.0025;
+    public static double outtake_Ki = 0;
+    public static double outtake_Kd = 0.000011;
+    public static double outtake_Kf = 0;
+
+    public static double tolerance = 0;
+
+    public static int outtakepos = 225;
+
+    public static int intakepos = -225;
+    Slides slides;
+    int slidesTarget = 0;
+
 
     @Override
     public void runOpMode() {
 
         // Initialize the hardware variables. Note that the strings used here must correspond
         // to the names assigned during the robot configuration step on the DS or RC devices.
-        FL  = hardwareMap.get(DcMotor.class, "FL");
-        BL  = hardwareMap.get(DcMotor.class, "BL");
+        FL = hardwareMap.get(DcMotor.class, "FL");
+        BL = hardwareMap.get(DcMotor.class, "BL");
         FR = hardwareMap.get(DcMotor.class, "FR");
         BR = hardwareMap.get(DcMotor.class, "BR");
 
@@ -103,66 +139,109 @@ public class teleop extends LinearOpMode {
         // Wait for the game to start (driver presses START)
         telemetry.addData("Status", "Initialized");
         telemetry.update();
+        intakePIDF = new PIDF(intake_Kp, intake_Ki, intake_Kd, intake_Kf, tolerance);
 
+        outakePIDF = new PIDF(outtake_Kp, outtake_Ki, outtake_Kd, outtake_Kf, tolerance);
+
+        while (opModeInInit()) {
+            dashboardTelemetry.addData("motor rotate position", armRotateR.getCurrentPosition());
+            dashboardTelemetry.addData("motor rotate position", armRotateL.getCurrentPosition());
+            dashboardTelemetry.update();
+        }
         waitForStart();
         runtime.reset();
+        double power;
+        // Control Loop
 
-        // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
-            double max;
 
-            // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
-            double axial   = -gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
-            double lateral =  gamepad1.left_stick_x;
-            double yaw     =  gamepad1.right_stick_x;
+            // Slides
+            double currentValueR = slides.armSlideR.getCurrentPosition();
+            double currentValueL = slides.armSlideL.getCurrentPosition();
+            double finalPowerR = slides.rightSlidePIDF.update(slidesTarget, currentValueR);
+            double finalPowerL = slides.leftSlidePIDF.update(slidesTarget, currentValueL);
+            slides.armSlideR.setPower(finalPowerR);
+            slides.armSlideL.setPower(finalPowerL);
 
-            // Combine the joystick requests for each axis-motion to determine each wheel's power.
-            // Set up a variable for each drive wheel to save the power level for telemetry.
-            double leftFrontPower  = axial + lateral + yaw;
-            double rightFrontPower = axial - lateral - yaw;
-            double leftBackPower   = axial - lateral + yaw;
-            double rightBackPower  = axial + lateral - yaw;
+            // Rotation
+            int currentValue = (armRotateR.getCurrentPosition() + armRotateL.getCurrentPosition()) / 2;
+            waitForStart();
+            runtime.reset();
 
-            // Normalize the values so no wheel power exceeds 100%
-            // This ensures that the robot maintains the desired motion.
-            max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
-            max = Math.max(max, Math.abs(leftBackPower));
-            max = Math.max(max, Math.abs(rightBackPower));
+            // run until the end of the match (driver presses STOP)
+            while (opModeIsActive()) {
 
-            if (max > 1.0) {
-                leftFrontPower  /= max;
-                rightFrontPower /= max;
-                leftBackPower   /= max;
-                rightBackPower  /= max;
-            }
+                // DRIVE
+                double max;
+                // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
+                double axial = -gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
+                double lateral = gamepad1.left_stick_x;
+                double yaw = gamepad1.right_stick_x;
 
-            // This is test code:
-            //
-            // Uncomment the following code to test your motor directions.
-            // Each button should make the corresponding motor run FORWARD.
-            //   1) First get all the motors to take to correct positions on the robot
-            //      by adjusting your Robot Configuration if necessary.
-            //   2) Then make sure they run in the correct direction by modifying the
-            //      the setDirection() calls above.
-            // Once the correct motors move in the correct direction re-comment this code.
+                // Combine the joystick requests for each axis-motion to determine each wheel's power.
+                // Set up a variable for each drive wheel to save the power level for telemetry.
+                double leftFrontPower = axial + lateral + yaw;
+                double rightFrontPower = axial - lateral - yaw;
+                double leftBackPower = axial - lateral + yaw;
+                double rightBackPower = axial + lateral - yaw;
+
+                // Normalize the values so no wheel power exceeds 100%
+                // This ensures that the robot maintains the desired motion.
+                max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
+                max = Math.max(max, Math.abs(leftBackPower));
+                max = Math.max(max, Math.abs(rightBackPower));
+
+                if (max > 1.0) {
+                    leftFrontPower /= max;
+                    rightFrontPower /= max;
+                    leftBackPower /= max;
+                    rightBackPower /= max;
+                }
+
+                // This is test code:
+                //
+                // Uncomment the following code to test your motor directions.
+                // Each button should make the corresponding motor run FORWARD.
+                //   1) First get all the motors to take to correct positions on the robot
+                //      by adjusting your Robot Configuration if necessary.
+                //   2) Then make sure they run in the correct direction by modifying the
+                //      the setDirection() calls above.
+                // Once the correct motors move in the correct direction re-comment this code.
 
             /*
-            leftFrontPower  = gamepad1.x ? 1.0 : 0.0;  // X gamepad
-            leftBackPower   = gamepad1.a ? 1.0 : 0.0;  // A gamepad
-            rightFrontPower = gamepad1.y ? 1.0 : 0.0;  // Y gamepad
-            rightBackPower  = gamepad1.b ? 1.0 : 0.0;  // B gamepad
+            leftFrontPower  = gamepad2.x ? 1.0 : 0.0;  // X gamepad
+            leftBackPower   = gamepad2.a ? 1.0 : 0.0;  // A gamepad
+            rightFrontPower = gamepad2.y ? 1.0 : 0.0;  // Y gamepad
+            rightBackPower  = gamepad2.b ? 1.0 : 0.0;  // B gamepad
             */
 
-            // Send calculated power to wheels
-            FL.setPower(leftFrontPower);
-            FR.setPower(rightFrontPower);
-            BL.setPower(leftBackPower);
-            BR.setPower(rightBackPower);
+                // Send calculated power to wheels
+                FL.setPower(leftFrontPower);
+                FR.setPower(rightFrontPower);
+                BL.setPower(leftBackPower);
+                BR.setPower(rightBackPower);
 
-            // Show the elapsed game time and wheel power.
-            telemetry.addData("Status", "Run Time: " + runtime.toString());
-            telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
-            telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
-            telemetry.update();
+                // END DRIVE
+
+                // SLIDES
+                if (gamepad2.x == true) {
+                    targetposition = intakepos;
+                }
+                else if(gamepad2.b == true){
+                    targetposition=outtakepos;
+                }
+//
+                armRotateL.setPower(gamepad2.right_stick_y * 240);
+                armRotateR.setPower(gamepad2.right_stick_y * 240);
+
+
+                // Show the elapsed game time and wheel power.
+                telemetry.addData("Status", "Run Time: " + runtime.toString());
+                telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
+                telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
+                telemetry.update();
+            }
         }
-    }}
+    }
+
+}
