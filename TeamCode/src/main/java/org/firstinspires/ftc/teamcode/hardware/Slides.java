@@ -38,4 +38,23 @@ public class Slides {
         armSlideL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         armSlideR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
+
+    public void setPostion(String state){
+        int targetPosition = 0;
+        if(state == "INTAKE"){
+            //targetPosition = ....
+        }
+        else{
+            //targetPosition = ...
+        }
+
+        double currentValueR = armSlideR.getCurrentPosition();
+        double currentValueL = armSlideL.getCurrentPosition();
+        double finalPowerR = rightSlidePIDF.update(targetPosition, currentValueR);
+        double finalPowerL = leftSlidePIDF.update(targetPosition, currentValueL);
+        armSlideR.setPower(finalPowerR);
+        armSlideL.setPower(finalPowerL);
+    }
+
+
 }
