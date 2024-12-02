@@ -54,7 +54,7 @@ public class Linear_Slides extends LinearOpMode {
         // Control Loop
         while (opModeIsActive()) {
             double currentValueR = armSlideR.getCurrentPosition();
-            double currentValueL = armSlideL.getCurrentPosition();
+            double currentVaalueL = armSlideL.getCurrentPosition();
             double finalPowerR = rightSlidePIDF.update(targetPosition, currentValueR);
             double finalPowerL = leftSlidePIDF.update(targetPosition, currentValueL);
             armSlideR.setPower(finalPowerR);
