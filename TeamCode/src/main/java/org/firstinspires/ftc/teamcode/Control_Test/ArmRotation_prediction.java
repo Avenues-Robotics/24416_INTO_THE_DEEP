@@ -118,15 +118,15 @@ public class ArmRotation_prediction extends LinearOpMode {
                 }
 
             } else if (state.equals("OUTTAKE")) {
-                targetPosition=outtakepos;
-                if(currentValue >= targetPosition - 5){
+                targetPosition = outtakepos;
+                if (currentValue >= targetPosition - 5) {
                     power = 0;
-                } else{
+                } else {
                     int x = currentValue;
-                    outakePIDF.setKf(0.5142 * Math.sin(0.01389*x + 2.037) - 0.05517);
+                    outakePIDF.setKf(0.5142 * Math.sin(0.01389 * x + 2.037) - 0.05517);
                     power = outakePIDF.update(targetPosition, currentValue);
                 }
-            } else{
+            }else{
                 power = 0;
 //                targetPosition = 0;//put the tick value of the intake position;
 //                power = intakePIDF.update(targetPosition, currentValue);
