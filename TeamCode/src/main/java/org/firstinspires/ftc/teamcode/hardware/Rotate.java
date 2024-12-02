@@ -8,8 +8,8 @@ import org.firstinspires.ftc.teamcode.utilities.PIDF;
 public class Rotate {
 
     LinearOpMode opMode;
-    DcMotor armRotateR;
-    DcMotor armRotateL;
+    public DcMotor armRotateR;
+    public DcMotor armRotateL;
 
     PIDF intakePIDF;
     PIDF outakePIDF;
