@@ -230,9 +230,11 @@ public class teleop extends LinearOpMode {
                 else if(gamepad2.b == true){
                     targetposition=outtakepos;
                 }
+
+
 //
-                armRotateL.setPower(gamepad2.right_stick_y * 240);
-                armRotateR.setPower(gamepad2.right_stick_y * 240);
+//                armRotateL.setPower(gamepad2.right_stick_y * 240);
+//                armRotateR.setPower(gamepad2.right_stick_y * 240);
 
 
                 // Show the elapsed game time and wheel power.
