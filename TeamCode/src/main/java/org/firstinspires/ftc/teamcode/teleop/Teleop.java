@@ -273,7 +273,12 @@ public class Teleop extends LinearOpMode {
                 if(currentGamepad2.dpad_down && !prevGamepad2.dpad_down){ // THIS ALSO USES x
                     slides.setState("SLIDES RETRACTED");
                 }
-
+                if(currentGamepad2.x && !prevGamepad2.x) { // THIS ALSO USES x
+                    slides.setState("OUTTAKE");
+                }
+                if(currentGamepad2.b && !prevGamepad2.b) { // THIS ALSO USES x
+                slides.setState("INTAKE");
+            }
                 //if(currentGamepad2.dpad_down && !prevGamepad2)
 
 
