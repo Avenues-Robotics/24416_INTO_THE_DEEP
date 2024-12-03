@@ -36,9 +36,11 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.hardware.Rotate;
 import org.firstinspires.ftc.teamcode.hardware.Slides;
 import org.firstinspires.ftc.teamcode.utilities.PIDF;
 
@@ -73,12 +75,16 @@ import org.firstinspires.ftc.teamcode.utilities.PIDF;
 @Config
 @TeleOp(name="TeleOp", group="Linear OpMode")
 public class teleop extends LinearOpMode {
+    Gamepad prevGamepad1 = new Gamepad();
+    Gamepad currentGamepad1 = new Gamepad();
+    Gamepad prevGamepad2 = new Gamepad();
+    Gamepad currentGamepad2 = new Gamepad();
 
     // Declare OpMode members for each of the 4 motors.
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor FL = null;
-    private DcMotor armRotateR;
-    private DcMotor armRotateL;
+//    private DcMotor armRotateR;
+//    private DcMotor armRotateL;
 
     private DcMotor BL = null;
     private DcMotor FR = null;
@@ -87,7 +93,7 @@ public class teleop extends LinearOpMode {
     PIDF outakePIDF;
     FtcDashboard dashboard = FtcDashboard.getInstance();
     Telemetry dashboardTelemetry = dashboard.getTelemetry();
-    //adjust the Kp Ki Kf Kd to diffrent things based opon if it needs to go forward or back
+    //adjust the Kp Ki Kf Kd to diffent things based opon if it needs to go forward or back
 
     String state;
     public static double targetposition = 0;
@@ -108,6 +114,7 @@ public class teleop extends LinearOpMode {
 
     public static int intakepos = -225;
     Slides slides;
+    Rotate rotate;
     int slidesTarget = 0;
 
 
@@ -136,16 +143,17 @@ public class teleop extends LinearOpMode {
         FR.setDirection(DcMotor.Direction.FORWARD);
         BR.setDirection(DcMotor.Direction.FORWARD);
 
+        slides = new Slides(this);
+
+        rotate = new Rotate(this);
+
         // Wait for the game to start (driver presses START)
         telemetry.addData("Status", "Initialized");
         telemetry.update();
-        intakePIDF = new PIDF(intake_Kp, intake_Ki, intake_Kd, intake_Kf, tolerance);
-
-        outakePIDF = new PIDF(outtake_Kp, outtake_Ki, outtake_Kd, outtake_Kf, tolerance);
 
         while (opModeInInit()) {
-            dashboardTelemetry.addData("motor rotate position", armRotateR.getCurrentPosition());
-            dashboardTelemetry.addData("motor rotate position", armRotateL.getCurrentPosition());
+            dashboardTelemetry.addData("motor rotate position", rotate.armRotateR.getCurrentPosition());
+            dashboardTelemetry.addData("motor rotate position", rotate.armRotateL.getCurrentPosition());
             dashboardTelemetry.update();
         }
         waitForStart();
@@ -154,6 +162,14 @@ public class teleop extends LinearOpMode {
         // Control Loop
 
         while (opModeIsActive()) {
+
+            // Set the value of prevGamepad1 to the value of from the previous loop
+            prevGamepad1.copy(currentGamepad1);
+
+            // Set the value of currentGamepad1 to the current state of the gamepad
+            currentGamepad1.copy(gamepad1);
+            prevGamepad2.copy(currentGamepad2);
+            currentGamepad2.copy(gamepad2);
 
             // Slides
             double currentValueR = slides.armSlideR.getCurrentPosition();
@@ -164,7 +180,7 @@ public class teleop extends LinearOpMode {
             slides.armSlideL.setPower(finalPowerL);
 
             // Rotation
-            int currentValue = (armRotateR.getCurrentPosition() + armRotateL.getCurrentPosition()) / 2;
+            int currentValue = (rotate.armRotateR.getCurrentPosition() + rotate.armRotateL.getCurrentPosition()) / 2;
             waitForStart();
             runtime.reset();
 
@@ -222,19 +238,18 @@ public class teleop extends LinearOpMode {
                 BR.setPower(rightBackPower);
 
                 // END DRIVE
-
                 // SLIDES
-                if (gamepad2.x == true) {
+                if(currentGamepad1.x && !prevGamepad1.x){
                     targetposition = intakepos;
-                }
-                else if(gamepad2.b == true){
-                    targetposition=outtakepos;
+                }else if(currentGamepad2.x && !prevGamepad2.x){
+                    targetposition = outtakepos;
                 }
 
-
+                intakePIDF = new PIDF(intake_Kp, intake_Ki, intake_Kd, intake_Kf, tolerance);
+                outakePIDF = new PIDF(outtake_Kp, outtake_Ki, outtake_Kd, outtake_Kf, tolerance);
 //
-//                armRotateL.setPower(gamepad2.right_stick_y * 240);
-//                armRotateR.setPower(gamepad2.right_stick_y * 240);
+//                rotate.armRotateL.setPower(gamepad2.right_stick_y * 240);
+//                rotate.armRotateR.setPower(gamepad2.right_stick_y * 240);
 
 
                 // Show the elapsed game time and wheel power.
