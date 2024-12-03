@@ -43,6 +43,7 @@ public class Slides {
         int targetPosition;
         if(state.equals("SLIDES RETRACTED")){
             targetPosition = 0;
+            setState("SLIDES RETRACTED CONFIRMED");
         }
         else if(state.equals("CLOSE INTAKE")){
             targetPosition = 500; // FIX THIS VALUE
