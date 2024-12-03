@@ -40,12 +40,21 @@ public class Slides {
     }
 
     public void setPostion(String state){
-        int targetPosition = 0;
-        if(state == "INTAKE"){
-            //targetPosition = ....
+        int targetPosition;
+        if(state.equals("RETRACTED")){
+            targetPosition = 0;
+        }
+        else if(state.equals("CLOSE INTAKE")){
+            targetPosition = 500; // FIX THIS VALUE
+        }
+        else if(state.equals("FAR INTAKE")){
+            targetPosition = 2500; // FIX THIS VALUE
+        }
+        else if(state.equals("OUTTAKE")){
+            targetPosition = 3000; // FIX THIS VALUE
         }
         else{
-            //targetPosition = ...
+            targetPosition = 0;
         }
 
         double currentValueR = armSlideR.getCurrentPosition();
@@ -54,6 +63,10 @@ public class Slides {
         double finalPowerL = leftSlidePIDF.update(targetPosition, currentValueL);
         armSlideR.setPower(finalPowerR);
         armSlideL.setPower(finalPowerL);
+    }
+
+    public int getPosition(){
+        return (armSlideL.getCurrentPosition() + armSlideR.getCurrentPosition()) / 2;
     }
 
 
