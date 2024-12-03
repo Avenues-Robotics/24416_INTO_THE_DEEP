@@ -260,7 +260,9 @@ public class Teleop extends LinearOpMode {
                 // INSTEAD OF using target position and the PIDFs here,
                 // call slides.setState("INTAKE CLOSE") or
                 // slides.setState("OUTTAKE")
-
+                if(currentGamepad2.dpad_up && !prevGamepad2.dpad_up){ // THIS USES x
+                    slides.setState("SLIDES OUTTAKE");
+                }
                 }
                 if(currentGamepad2.dpad_right && !prevGamepad2.dpad_right){ // THIS USES x
                     slides.setState("FAR OUTTAKE");
@@ -269,8 +271,7 @@ public class Teleop extends LinearOpMode {
                     slides.setState("CLOSE OUTTAKE");
                 }
                 if(currentGamepad2.dpad_down && !prevGamepad2.dpad_down){ // THIS ALSO USES x
-                    slides.setState("RETRACTED");
-
+                    slides.setState("SLIDES RETRACTED");
                 }
 
                 //if(currentGamepad2.dpad_down && !prevGamepad2)

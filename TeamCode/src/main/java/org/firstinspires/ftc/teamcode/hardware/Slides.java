@@ -41,7 +41,7 @@ public class Slides {
 
     public void setState(String state){
         int targetPosition;
-        if(state.equals("RETRACTED")){
+        if(state.equals("SLIDES RETRACTED")){
             targetPosition = 0;
         }
         else if(state.equals("CLOSE INTAKE")){
@@ -50,7 +50,7 @@ public class Slides {
         else if(state.equals("FAR INTAKE")){
             targetPosition = 2500; // FIX THIS VALUE
         }
-        else if(state.equals("OUTTAKE")){
+        else if(state.equals("SLIDES OUTTAKE")){
             targetPosition = 3000; // FIX THIS VALUE
         }
         else{
