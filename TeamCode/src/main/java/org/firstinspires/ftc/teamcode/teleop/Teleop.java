@@ -37,6 +37,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.hardware.Drive;
 import org.firstinspires.ftc.teamcode.hardware.Rotate;
 import org.firstinspires.ftc.teamcode.hardware.Slides;
 import org.firstinspires.ftc.teamcode.utilities.PIDF;
@@ -75,7 +76,7 @@ public class Teleop extends LinearOpMode {
     Gamepad currentGamepad1 = new Gamepad();
     Gamepad prevGamepad2 = new Gamepad();
     Gamepad currentGamepad2 = new Gamepad();
-
+    Drive drive = new Drive(this);
 
     // Declare OpMode members for each of the 4 motors.
     private ElapsedTime runtime = new ElapsedTime();
@@ -175,6 +176,7 @@ public class Teleop extends LinearOpMode {
             // Set the value of currentGamepad1/2 to the current state of the gamepad
             currentGamepad1.copy(gamepad1);
             currentGamepad2.copy(gamepad2);
+            drive.stickDrive();
 
             // Slides
 
@@ -258,13 +260,21 @@ public class Teleop extends LinearOpMode {
                 // INSTEAD OF using target position and the PIDFs here,
                 // call slides.setState("INTAKE CLOSE") or
                 // slides.setState("OUTTAKE")
-                if(currentGamepad1.x && !prevGamepad1.x){ // THIS USES x
-                    targetposition = intakepos;
-                } else if(currentGamepad2.x && !prevGamepad2.x){ // THIS ALSO USES x
-                    targetposition = outtakepos;
+
                 }
-                intakePIDF = new PIDF(intake_Kp, intake_Ki, intake_Kd, intake_Kf, tolerance);
-                outakePIDF = new PIDF(outtake_Kp, outtake_Ki, outtake_Kd, outtake_Kf, tolerance);
+                if(currentGamepad2.dpad_right && !prevGamepad2.dpad_right){ // THIS USES x
+                    slides.setState("FAR OUTTAKE");
+                }
+                if(currentGamepad2.dpad_left && !prevGamepad2.dpad_left){ // THIS USES x
+                    slides.setState("CLOSE OUTTAKE");
+                }
+                if(currentGamepad2.dpad_down && !prevGamepad2.dpad_down){ // THIS ALSO USES x
+                    slides.setState("RETRACTED");
+
+                }
+
+                //if(currentGamepad2.dpad_down && !prevGamepad2)
+
 
                 // I think rotate with the sticks is a bad idea.
                 // Just use rotate.rotate("INTAKE") or
@@ -291,11 +301,8 @@ public class Teleop extends LinearOpMode {
                 // You might want to add telemetry for the slides and rotation
                 // states and positions.
                 telemetry.addData("Status", "Run Time: " + runtime.toString());
-                telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
-                telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
                 telemetry.update();
             }
         }
     }
 
-}
