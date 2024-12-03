@@ -30,12 +30,9 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
 import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.config.Config;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -73,7 +70,7 @@ import org.firstinspires.ftc.teamcode.utilities.PIDF;
  */
 
 @TeleOp(name="TeleOp", group="Linear OpMode")
-public class teleop extends LinearOpMode {
+public class Teleop extends LinearOpMode {
     Gamepad prevGamepad1 = new Gamepad();
     Gamepad currentGamepad1 = new Gamepad();
     Gamepad prevGamepad2 = new Gamepad();
