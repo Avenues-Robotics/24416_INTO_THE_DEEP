@@ -178,8 +178,9 @@ public class Teleop extends LinearOpMode {
 
             // Slides
 
-            // @ RYDER - use slides.setPosition("RETRACTED") instead of
-            // all of this (look at the slides.setPosition(String state) method
+            // @ RYDER - use slides.setState("RETRACTED") instead of
+            // all of this (look at the slides.setState(String state) method
+            // all of this (look at the slides.setState(String state) method
             double currentValueR = slides.armSlideR.getCurrentPosition();
             double currentValueL = slides.armSlideL.getCurrentPosition();
             double finalPowerR = slides.rightSlidePIDF.update(slidesTarget, currentValueR);
@@ -255,8 +256,8 @@ public class Teleop extends LinearOpMode {
                 // SLIDES
 
                 // INSTEAD OF using target position and the PIDFs here,
-                // call slides.setPosition("INTAKE CLOSE") or
-                // slides.setPosition("OUTTAKE")
+                // call slides.setState("INTAKE CLOSE") or
+                // slides.setState("OUTTAKE")
                 if(currentGamepad1.x && !prevGamepad1.x){ // THIS USES x
                     targetposition = intakepos;
                 } else if(currentGamepad2.x && !prevGamepad2.x){ // THIS ALSO USES x
@@ -275,7 +276,7 @@ public class Teleop extends LinearOpMode {
                 // not allowing the gamepad button to work unless the slide position
                 // is at or near 0.  (Use the getPosition() method in the Slides class
                 // to check the position.)
-                // Or you could call slides.setPosition("RETRACTED") when a rotate
+                // Or you could call slides.setState("RETRACTED") when a rotate
                 // button is pressed, use a while to wait for the slides position to
                 // reach 0 (or close to 0), then call rotate.rotate("INTAKE") or
                 // rotate.rotate("OUTTAKE")

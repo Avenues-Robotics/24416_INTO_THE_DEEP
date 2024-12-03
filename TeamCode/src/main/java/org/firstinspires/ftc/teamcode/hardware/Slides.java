@@ -39,7 +39,7 @@ public class Slides {
         armSlideR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
-    public void setPostion(String state){
+    public void setState(String state){
         int targetPosition;
         if(state.equals("RETRACTED")){
             targetPosition = 0;
@@ -63,6 +63,10 @@ public class Slides {
         double finalPowerL = leftSlidePIDF.update(targetPosition, currentValueL);
         armSlideR.setPower(finalPowerR);
         armSlideL.setPower(finalPowerL);
+    }
+
+    public void setPosition(int targetPosition){
+
     }
 
     public int getPosition(){
