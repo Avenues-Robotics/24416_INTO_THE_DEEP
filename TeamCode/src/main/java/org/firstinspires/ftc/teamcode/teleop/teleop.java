@@ -72,7 +72,6 @@ import org.firstinspires.ftc.teamcode.utilities.PIDF;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@Config
 @TeleOp(name="TeleOp", group="Linear OpMode")
 public class teleop extends LinearOpMode {
     Gamepad prevGamepad1 = new Gamepad();
@@ -80,8 +79,12 @@ public class teleop extends LinearOpMode {
     Gamepad prevGamepad2 = new Gamepad();
     Gamepad currentGamepad2 = new Gamepad();
 
+
     // Declare OpMode members for each of the 4 motors.
     private ElapsedTime runtime = new ElapsedTime();
+
+    // The motor members could be initialized using new Drive(this),
+    // Then you wouldn't need to do it all here.  Keeps the code cleaner.
     private DcMotor FL = null;
 //    private DcMotor armRotateR;
 //    private DcMotor armRotateL;
@@ -89,30 +92,34 @@ public class teleop extends LinearOpMode {
     private DcMotor BL = null;
     private DcMotor FR = null;
     private DcMotor BR = null;
-    PIDF intakePIDF;
-    PIDF outakePIDF;
-    FtcDashboard dashboard = FtcDashboard.getInstance();
-    Telemetry dashboardTelemetry = dashboard.getTelemetry();
-    //adjust the Kp Ki Kf Kd to diffent things based opon if it needs to go forward or back
+
+    // @ Ryder - a lot of the variables here are not needed since
+    // they are stored in either Rotate or Slides
+
+    PIDF intakePIDF; // REMOVE
+    PIDF outakePIDF;  // REMOVE
+    FtcDashboard dashboard = FtcDashboard.getInstance();  // REMOVE
+    Telemetry dashboardTelemetry = dashboard.getTelemetry();  // REMOVE
+    //adjust the Kp Ki Kf Kd to diffent things based opon if it needs to go forward or back  // REMOVE
 
     String state;
-    public static double targetposition = 0;
+    public static double targetposition = 0;  // MAYBE REMOVE
 
-    public static double intake_Kp = 0.0105;
-    public static double intake_Ki = 0;
-    public static double intake_Kd = 0.0015;
-    public static double intake_Kf = 0;
+    public static double intake_Kp = 0.0105;  // REMOVE
+    public static double intake_Ki = 0; // REMOVE
+    public static double intake_Kd = 0.0015; // REMOVE
+    public static double intake_Kf = 0; // REMOVE
 
-    public static double outtake_Kp = 0.0025;
-    public static double outtake_Ki = 0;
-    public static double outtake_Kd = 0.000011;
-    public static double outtake_Kf = 0;
+    public static double outtake_Kp = 0.0025; // REMOVE
+    public static double outtake_Ki = 0; // REMOVE
+    public static double outtake_Kd = 0.000011; // REMOVE
+    public static double outtake_Kf = 0; // REMOVE
 
     public static double tolerance = 0;
 
-    public static int outtakepos = 225;
+    public static int outtakepos = 225; // REMOVE
 
-    public static int intakepos = -225;
+    public static int intakepos = -225; // REMOVE
     Slides slides;
     Rotate rotate;
     int slidesTarget = 0;
@@ -151,6 +158,7 @@ public class teleop extends LinearOpMode {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
+        // YOU CAN REMOVE THIS SINCE YOU WON'T TEST TELEOP WITH DASHBOARD
         while (opModeInInit()) {
             dashboardTelemetry.addData("motor rotate position", rotate.armRotateR.getCurrentPosition());
             dashboardTelemetry.addData("motor rotate position", rotate.armRotateL.getCurrentPosition());
@@ -158,20 +166,23 @@ public class teleop extends LinearOpMode {
         }
         waitForStart();
         runtime.reset();
-        double power;
+        double power; // REMOVE
         // Control Loop
 
         while (opModeIsActive()) {
 
-            // Set the value of prevGamepad1 to the value of from the previous loop
+            // Set the value of prevGamepad1/2 to the value of from the previous loop
             prevGamepad1.copy(currentGamepad1);
-
-            // Set the value of currentGamepad1 to the current state of the gamepad
-            currentGamepad1.copy(gamepad1);
             prevGamepad2.copy(currentGamepad2);
+
+            // Set the value of currentGamepad1/2 to the current state of the gamepad
+            currentGamepad1.copy(gamepad1);
             currentGamepad2.copy(gamepad2);
 
             // Slides
+
+            // @ RYDER - use slides.setPosition("RETRACTED") instead of
+            // all of this (look at the slides.setPosition(String state) method
             double currentValueR = slides.armSlideR.getCurrentPosition();
             double currentValueL = slides.armSlideL.getCurrentPosition();
             double finalPowerR = slides.rightSlidePIDF.update(slidesTarget, currentValueR);
@@ -180,12 +191,17 @@ public class teleop extends LinearOpMode {
             slides.armSlideL.setPower(finalPowerL);
 
             // Rotation
+            // REMOVE THIS, DON'T ROTATE ON INIT
             int currentValue = (rotate.armRotateR.getCurrentPosition() + rotate.armRotateL.getCurrentPosition()) / 2;
             waitForStart();
             runtime.reset();
 
             // run until the end of the match (driver presses STOP)
             while (opModeIsActive()) {
+
+                // It would be cleaner to move all of this code to the Drive class
+                // Just make a method like Drive.stickDrive() and all of this code
+                // could go there.  Just remember that gamepad1 would be opMode.gamepad1
 
                 // DRIVE
                 double max;
@@ -224,12 +240,12 @@ public class teleop extends LinearOpMode {
                 //      the setDirection() calls above.
                 // Once the correct motors move in the correct direction re-comment this code.
 
-            /*
-            leftFrontPower  = gamepad2.x ? 1.0 : 0.0;  // X gamepad
-            leftBackPower   = gamepad2.a ? 1.0 : 0.0;  // A gamepad
-            rightFrontPower = gamepad2.y ? 1.0 : 0.0;  // Y gamepad
-            rightBackPower  = gamepad2.b ? 1.0 : 0.0;  // B gamepad
-            */
+                /*
+                leftFrontPower  = gamepad2.x ? 1.0 : 0.0;  // X gamepad
+                leftBackPower   = gamepad2.a ? 1.0 : 0.0;  // A gamepad
+                rightFrontPower = gamepad2.y ? 1.0 : 0.0;  // Y gamepad
+                rightBackPower  = gamepad2.b ? 1.0 : 0.0;  // B gamepad
+                */
 
                 // Send calculated power to wheels
                 FL.setPower(leftFrontPower);
@@ -238,21 +254,44 @@ public class teleop extends LinearOpMode {
                 BR.setPower(rightBackPower);
 
                 // END DRIVE
+
                 // SLIDES
-                if(currentGamepad1.x && !prevGamepad1.x){
+
+                // INSTEAD OF using target position and the PIDFs here,
+                // call slides.setPosition("INTAKE CLOSE") or
+                // slides.setPosition("OUTTAKE")
+                if(currentGamepad1.x && !prevGamepad1.x){ // THIS USES x
                     targetposition = intakepos;
-                }else if(currentGamepad2.x && !prevGamepad2.x){
+                } else if(currentGamepad2.x && !prevGamepad2.x){ // THIS ALSO USES x
                     targetposition = outtakepos;
                 }
-
                 intakePIDF = new PIDF(intake_Kp, intake_Ki, intake_Kd, intake_Kf, tolerance);
                 outakePIDF = new PIDF(outtake_Kp, outtake_Ki, outtake_Kd, outtake_Kf, tolerance);
-//
+
+                // I think rotate with the sticks is a bad idea.
+                // Just use rotate.rotate("INTAKE") or
+                // rotate.rotate("OUTTAKE")
+                // See the Rotate class rotate method
+                //
+                // One thing to think about is making sure that the slides
+                // are pulled in before you rotate.  You could do that by just
+                // not allowing the gamepad button to work unless the slide position
+                // is at or near 0.  (Use the getPosition() method in the Slides class
+                // to check the position.)
+                // Or you could call slides.setPosition("RETRACTED") when a rotate
+                // button is pressed, use a while to wait for the slides position to
+                // reach 0 (or close to 0), then call rotate.rotate("INTAKE") or
+                // rotate.rotate("OUTTAKE")
+
+
 //                rotate.armRotateL.setPower(gamepad2.right_stick_y * 240);
 //                rotate.armRotateR.setPower(gamepad2.right_stick_y * 240);
 
 
                 // Show the elapsed game time and wheel power.
+
+                // You might want to add telemetry for the slides and rotation
+                // states and positions.
                 telemetry.addData("Status", "Run Time: " + runtime.toString());
                 telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
                 telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
