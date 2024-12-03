@@ -27,8 +27,8 @@ public class Slides {
 
     public Slides(LinearOpMode opModeCalledFrom){
         opMode = opModeCalledFrom;
-        armSlideR = opModeCalledFrom.hardwareMap.get(DcMotor.class, "ArmSlideR");
-        armSlideL = opModeCalledFrom.hardwareMap.get(DcMotor.class, "ArmSlideL");
+        armSlideR = opMode.hardwareMap.get(DcMotor.class, "ArmSlideR");
+        armSlideL = opMode.hardwareMap.get(DcMotor.class, "ArmSlideL");
         armSlideR.setDirection(DcMotor.Direction.REVERSE);
         armSlideL.setDirection(DcMotor.Direction.FORWARD);
         leftSlidePIDF = new PIDF(KpL, KiL, KdL, KfL, toleranceL);
@@ -43,16 +43,16 @@ public class Slides {
         int targetPosition;
         if(state.equals("SLIDES RETRACTED")){
             targetPosition = 0;
-            setState("SLIDES RETRACTED CONFIRMED");
+//            setState("SLIDES RETRACTED CONFIRMED");
         }
         else if(state.equals("CLOSE INTAKE")){
             targetPosition = 500; // FIX THIS VALUE
         }
         else if(state.equals("FAR INTAKE")){
-            targetPosition = 2500; // FIX THIS VALUE
+            targetPosition = 750; // FIX THIS VALUE
         }
         else if(state.equals("SLIDES OUTTAKE")){
-            targetPosition = 3000; // FIX THIS VALUE
+            targetPosition = 1500; // FIX THIS VALUE
         }
         else{
             targetPosition = 0;
