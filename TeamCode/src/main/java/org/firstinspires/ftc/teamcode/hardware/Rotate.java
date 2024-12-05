@@ -26,9 +26,9 @@ public class Rotate {
 
     public static double tolerance = 0;
 
-    public static int outtakepos = 225;
+    public static int outtakepos = 0;
 
-    public static int intakepos = 0;
+    public static int intakepos = -225;
 
     double power;
 
@@ -54,7 +54,7 @@ public class Rotate {
 
         if (state.equals("INTAKE")) {
             targetPosition=intakepos;
-            if(currentValue <= targetPosition){
+            if(currentValue >= targetPosition){
                 power = 0;
             } else{
                 int x = currentValue;
@@ -64,7 +64,7 @@ public class Rotate {
 
         } else if (state.equals("OUTTAKE")) {
             targetPosition=outtakepos;
-            if(currentValue >= targetPosition - 5){
+            if(currentValue <= targetPosition - 5){
                 power = 0;
             } else{
                 int x = currentValue;

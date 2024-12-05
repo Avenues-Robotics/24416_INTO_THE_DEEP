@@ -90,8 +90,11 @@ public class Teleop extends LinearOpMode {
 
     Slides slides;
     String slidesState;
+    String rotateState;
     Rotate rotate;
     int slidesTarget = 0;
+
+
 
 
     @Override
@@ -124,8 +127,10 @@ public class Teleop extends LinearOpMode {
         slides = new Slides(this);
         slidesState = "SLIDES RETRACTED";
 
-        rotate = new Rotate(this);
 
+
+        rotate = new Rotate(this);
+        rotateState = "OUTTAKE";
         // Wait for the game to start (driver presses START)
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -226,15 +231,15 @@ public class Teleop extends LinearOpMode {
             if (currentGamepad2.dpad_down && !prevGamepad2.dpad_down) { // THIS ALSO USES x
                 slidesState = "SLIDES RETRACTED";
             }
-            if (currentGamepad2.x && !prevGamepad2.x && slides.getPosition() < 20) {
+            if ((currentGamepad2.x && !prevGamepad2.x) && (slides.getPosition() < 50)) {
                 // THIS ALSO USES x
-                slides.setState("OUTTAKE");
+                rotateState = "OUTTAKE";
             }
-            if (currentGamepad2.b && !prevGamepad2.b && slides.getPosition() < 20) { // THIS ALSO USES x
-                slides.setState("INTAKE");
+            if ((currentGamepad2.b && !prevGamepad2.b) && (slides.getPosition() < 50)) { // THIS ALSO USES x
+                rotateState = "INTAKE";
             }
             slides.setState(slidesState);
-
+            rotate.setState(rotateState);
             //if(currentGamepad2.dpad_down && !prevGamepad2)
 
 
@@ -263,8 +268,12 @@ public class Teleop extends LinearOpMode {
             // You might want to add telemetry for the slides and rotation
             // states and positions.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
+            telemetry.addData("slide position", slides.getPosition());
+            telemetry.addData("String State Rotate", rotateState);
+            telemetry.addData("String State Slides", slidesState);
             telemetry.update();
+
         }
-    }
+        }
 }
 
