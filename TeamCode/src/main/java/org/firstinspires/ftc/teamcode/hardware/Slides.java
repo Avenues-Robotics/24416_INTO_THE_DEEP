@@ -52,7 +52,7 @@ public class Slides {
             targetPosition = 1500; // FIX THIS VALUE
         }
         else if(state.equals("SLIDES OUTTAKE")){
-            targetPosition = 3350; // FIX THIS VALUE
+            targetPosition = 3150; // FIX THIS VALUE
         }
         else{
             targetPosition = 0;

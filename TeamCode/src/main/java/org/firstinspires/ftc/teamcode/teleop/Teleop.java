@@ -131,6 +131,7 @@ public class Teleop extends LinearOpMode {
 
         rotate = new Rotate(this);
         rotateState = "OUTTAKE";
+
         // Wait for the game to start (driver presses START)
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -231,6 +232,9 @@ public class Teleop extends LinearOpMode {
             if (currentGamepad2.dpad_down && !prevGamepad2.dpad_down) { // THIS ALSO USES x
                 slidesState = "SLIDES RETRACTED";
             }
+            slides.setState(slidesState);
+
+            // ROTATE
             if ((currentGamepad2.x && !prevGamepad2.x) && (slides.getPosition() < 50)) {
                 // THIS ALSO USES x
                 rotateState = "OUTTAKE";
@@ -238,7 +242,6 @@ public class Teleop extends LinearOpMode {
             if ((currentGamepad2.b && !prevGamepad2.b) && (slides.getPosition() < 50)) { // THIS ALSO USES x
                 rotateState = "INTAKE";
             }
-            slides.setState(slidesState);
             rotate.setState(rotateState);
             //if(currentGamepad2.dpad_down && !prevGamepad2)
 
@@ -271,6 +274,11 @@ public class Teleop extends LinearOpMode {
             telemetry.addData("slide position", slides.getPosition());
             telemetry.addData("String State Rotate", rotateState);
             telemetry.addData("String State Slides", slidesState);
+            telemetry.addData("target position", rotate.targetPosition);
+            telemetry.addData("rotate R position", rotate.armRotateR.getCurrentPosition());
+            telemetry.addData("rotate L position", rotate.armRotateL.getCurrentPosition());
+            telemetry.addData("rotate right", rotate.armRotateR.getPower());
+            telemetry.addData("rotate left", rotate.armRotateL.getPower());
             telemetry.update();
 
         }

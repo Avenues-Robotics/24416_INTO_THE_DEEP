@@ -30,6 +30,8 @@ public class Rotate {
 
     public static int intakepos = -225;
 
+    public int targetPosition;
+
     double power;
 
     public Rotate(LinearOpMode opModeCalledFrom){
@@ -48,23 +50,23 @@ public class Rotate {
     }
 
     public void setState(String state){
-        int targetPosition;
 
         int currentValue = (armRotateR.getCurrentPosition() + armRotateL.getCurrentPosition()) / 2;
 
         if (state.equals("INTAKE")) {
-            targetPosition=intakepos;
-            if(currentValue >= targetPosition){
+            targetPosition = intakepos;
+            if(currentValue <= targetPosition){
                 power = 0;
             } else{
                 int x = currentValue;
                 intakePIDF.setKf(0.5142 * Math.sin(0.01389*x + 2.037) - 0.05517);
                 power = intakePIDF.update(targetPosition, currentValue);
+
             }
 
         } else if (state.equals("OUTTAKE")) {
-            targetPosition=outtakepos;
-            if(currentValue <= targetPosition - 5){
+            targetPosition = outtakepos;
+            if(currentValue >= targetPosition - 5){
                 power = 0;
             } else{
                 int x = currentValue;
@@ -78,4 +80,5 @@ public class Rotate {
         armRotateR.setPower(power);
         armRotateL.setPower(power);
     }
+
 }
