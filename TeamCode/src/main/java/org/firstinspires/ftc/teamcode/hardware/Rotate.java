@@ -47,7 +47,7 @@ public class Rotate {
         outakePIDF = new PIDF(outtake_Kp, outtake_Ki, outtake_Kd, outtake_Kf, tolerance);
     }
 
-    public void rotate(String state){
+    public void setState(String state){
         int targetPosition;
 
         int currentValue = (armRotateR.getCurrentPosition() + armRotateL.getCurrentPosition()) / 2;

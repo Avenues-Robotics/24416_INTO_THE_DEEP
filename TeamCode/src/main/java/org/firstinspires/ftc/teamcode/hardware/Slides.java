@@ -27,8 +27,8 @@ public class Slides {
 
     public Slides(LinearOpMode opModeCalledFrom){
         opMode = opModeCalledFrom;
-        armSlideR = opModeCalledFrom.hardwareMap.get(DcMotor.class, "ArmSlideR");
-        armSlideL = opModeCalledFrom.hardwareMap.get(DcMotor.class, "ArmSlideL");
+        armSlideR = opMode.hardwareMap.get(DcMotor.class, "ArmSlideR");
+        armSlideL = opMode.hardwareMap.get(DcMotor.class, "ArmSlideL");
         armSlideR.setDirection(DcMotor.Direction.REVERSE);
         armSlideL.setDirection(DcMotor.Direction.FORWARD);
         leftSlidePIDF = new PIDF(KpL, KiL, KdL, KfL, toleranceL);
@@ -39,13 +39,23 @@ public class Slides {
         armSlideR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
-    public void setPostion(String state){
-        int targetPosition = 0;
-        if(state == "INTAKE"){
-            //targetPosition = ....
+    public void setState(String state){
+        int targetPosition;
+        if(state.equals("SLIDES RETRACTED")){
+            targetPosition = 0;
+//            setState("SLIDES RETRACTED CONFIRMED");
+        }
+        else if(state.equals("CLOSE INTAKE")){
+            targetPosition = 500; // FIX THIS VALUE
+        }
+        else if(state.equals("FAR INTAKE")){
+            targetPosition = 750; // FIX THIS VALUE
+        }
+        else if(state.equals("SLIDES OUTTAKE")){
+            targetPosition = 1500; // FIX THIS VALUE
         }
         else{
-            //targetPosition = ...
+            targetPosition = 0;
         }
 
         double currentValueR = armSlideR.getCurrentPosition();
@@ -54,6 +64,14 @@ public class Slides {
         double finalPowerL = leftSlidePIDF.update(targetPosition, currentValueL);
         armSlideR.setPower(finalPowerR);
         armSlideL.setPower(finalPowerL);
+    }
+
+    public void setPosition(int targetPosition){
+
+    }
+
+    public int getPosition(){
+        return (armSlideL.getCurrentPosition() + armSlideR.getCurrentPosition()) / 2;
     }
 
 

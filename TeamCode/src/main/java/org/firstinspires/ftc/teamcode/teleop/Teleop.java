@@ -30,16 +30,14 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
 import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.config.Config;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.hardware.Drive;
 import org.firstinspires.ftc.teamcode.hardware.Rotate;
 import org.firstinspires.ftc.teamcode.hardware.Slides;
 import org.firstinspires.ftc.teamcode.utilities.PIDF;
@@ -72,9 +70,8 @@ import org.firstinspires.ftc.teamcode.utilities.PIDF;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@Config
 @TeleOp(name="TeleOp", group="Linear OpMode")
-public class teleop extends LinearOpMode {
+public class Teleop extends LinearOpMode {
     Gamepad prevGamepad1 = new Gamepad();
     Gamepad currentGamepad1 = new Gamepad();
     Gamepad prevGamepad2 = new Gamepad();
@@ -82,38 +79,17 @@ public class teleop extends LinearOpMode {
 
     // Declare OpMode members for each of the 4 motors.
     private ElapsedTime runtime = new ElapsedTime();
-    private DcMotor FL = null;
-//    private DcMotor armRotateR;
+
+    //    private DcMotor armRotateR;
 //    private DcMotor armRotateL;
 
-    private DcMotor BL = null;
-    private DcMotor FR = null;
-    private DcMotor BR = null;
-    PIDF intakePIDF;
-    PIDF outakePIDF;
-    FtcDashboard dashboard = FtcDashboard.getInstance();
-    Telemetry dashboardTelemetry = dashboard.getTelemetry();
-    //adjust the Kp Ki Kf Kd to diffent things based opon if it needs to go forward or back
+    // @ Ryder - a lot of the variables here are not needed since
+    // they are stored in either Rotate or Slides
 
-    String state;
-    public static double targetposition = 0;
+    //adjust the Kp Ki Kf Kd to diffent things based opon if it needs to go forward or back  // REMOVE
 
-    public static double intake_Kp = 0.0105;
-    public static double intake_Ki = 0;
-    public static double intake_Kd = 0.0015;
-    public static double intake_Kf = 0;
-
-    public static double outtake_Kp = 0.0025;
-    public static double outtake_Ki = 0;
-    public static double outtake_Kd = 0.000011;
-    public static double outtake_Kf = 0;
-
-    public static double tolerance = 0;
-
-    public static int outtakepos = 225;
-
-    public static int intakepos = -225;
     Slides slides;
+    String slidesState;
     Rotate rotate;
     int slidesTarget = 0;
 
@@ -123,10 +99,12 @@ public class teleop extends LinearOpMode {
 
         // Initialize the hardware variables. Note that the strings used here must correspond
         // to the names assigned during the robot configuration step on the DS or RC devices.
-        FL = hardwareMap.get(DcMotor.class, "FL");
-        BL = hardwareMap.get(DcMotor.class, "BL");
-        FR = hardwareMap.get(DcMotor.class, "FR");
-        BR = hardwareMap.get(DcMotor.class, "BR");
+        // The motor members could be initialized using new Drive(this),
+        // Then you wouldn't need to do it all here.  Keeps the code cleaner.
+        DcMotor FL = hardwareMap.get(DcMotor.class, "FL");
+        DcMotor BL = hardwareMap.get(DcMotor.class, "BL");
+        DcMotor FR = hardwareMap.get(DcMotor.class, "FR");
+        DcMotor BR = hardwareMap.get(DcMotor.class, "BR");
 
         // ########################################################################################
         // !!!            IMPORTANT Drive Information. Test your motor directions.            !!!!!
@@ -144,6 +122,7 @@ public class teleop extends LinearOpMode {
         BR.setDirection(DcMotor.Direction.FORWARD);
 
         slides = new Slides(this);
+        slidesState = "SLIDES RETRACTED";
 
         rotate = new Rotate(this);
 
@@ -151,78 +130,69 @@ public class teleop extends LinearOpMode {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
-        while (opModeInInit()) {
-            dashboardTelemetry.addData("motor rotate position", rotate.armRotateR.getCurrentPosition());
-            dashboardTelemetry.addData("motor rotate position", rotate.armRotateL.getCurrentPosition());
-            dashboardTelemetry.update();
-        }
+
         waitForStart();
         runtime.reset();
-        double power;
+
+
         // Control Loop
 
         while (opModeIsActive()) {
 
-            // Set the value of prevGamepad1 to the value of from the previous loop
+            // Set the value of prevGamepad1/2 to the value of from the previous loop
             prevGamepad1.copy(currentGamepad1);
-
-            // Set the value of currentGamepad1 to the current state of the gamepad
-            currentGamepad1.copy(gamepad1);
             prevGamepad2.copy(currentGamepad2);
+
+            // Set the value of currentGamepad1/2 to the current state of the gamepad
+            currentGamepad1.copy(gamepad1);
             currentGamepad2.copy(gamepad2);
 
-            // Slides
-            double currentValueR = slides.armSlideR.getCurrentPosition();
-            double currentValueL = slides.armSlideL.getCurrentPosition();
-            double finalPowerR = slides.rightSlidePIDF.update(slidesTarget, currentValueR);
-            double finalPowerL = slides.leftSlidePIDF.update(slidesTarget, currentValueL);
-            slides.armSlideR.setPower(finalPowerR);
-            slides.armSlideL.setPower(finalPowerL);
 
-            // Rotation
-            int currentValue = (rotate.armRotateR.getCurrentPosition() + rotate.armRotateL.getCurrentPosition()) / 2;
             waitForStart();
             runtime.reset();
 
             // run until the end of the match (driver presses STOP)
-            while (opModeIsActive()) {
 
-                // DRIVE
-                double max;
-                // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
-                double axial = -gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
-                double lateral = gamepad1.left_stick_x;
-                double yaw = gamepad1.right_stick_x;
+            // It would be cleaner to move all of this code to the Drive class
+            // Just make a method like Drive.stickDrive() and all of this code
+            // could go there.  Just remember that gamepad1 would be opMode.gamepad1
 
-                // Combine the joystick requests for each axis-motion to determine each wheel's power.
-                // Set up a variable for each drive wheel to save the power level for telemetry.
-                double leftFrontPower = axial + lateral + yaw;
-                double rightFrontPower = axial - lateral - yaw;
-                double leftBackPower = axial - lateral + yaw;
-                double rightBackPower = axial + lateral - yaw;
+            // DRIVE
+            double max;
+            // POV Mode uses left joystick to go forward & strafe, and right joystick to rotate.
+            double axial = -gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
+            double lateral = gamepad1.left_stick_x;
+            double yaw = gamepad1.right_stick_x;
 
-                // Normalize the values so no wheel power exceeds 100%
-                // This ensures that the robot maintains the desired motion.
-                max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
-                max = Math.max(max, Math.abs(leftBackPower));
-                max = Math.max(max, Math.abs(rightBackPower));
+            // Combine the joystick requests for each axis-motion to determine each wheel's power.
+            // Set up a variable for each drive wheel to save the power level for telemetry.
+            double leftFrontPower = axial + lateral + yaw;
+            double rightFrontPower = axial - lateral - yaw;
+            double leftBackPower = axial - lateral + yaw;
+            double rightBackPower = axial + lateral - yaw;
 
-                if (max > 1.0) {
-                    leftFrontPower /= max;
-                    rightFrontPower /= max;
-                    leftBackPower /= max;
-                    rightBackPower /= max;
-                }
+            // Normalize the values so no wheel power exceeds 100%
+            // This ensures that the robot maintains the desired motion.
+            max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
+            max = Math.max(max, Math.abs(leftBackPower));
+            max = Math.max(max, Math.abs(rightBackPower));
 
-                // This is test code:
-                //
-                // Uncomment the following code to test your motor directions.
-                // Each button should make the corresponding motor run FORWARD.
-                //   1) First get all the motors to take to correct positions on the robot
-                //      by adjusting your Robot Configuration if necessary.
-                //   2) Then make sure they run in the correct direction by modifying the
-                //      the setDirection() calls above.
-                // Once the correct motors move in the correct direction re-comment this code.
+            if (max > 1.0) {
+                leftFrontPower /= max;
+                rightFrontPower /= max;
+                leftBackPower /= max;
+                rightBackPower /= max;
+            }
+
+            // This is test code:
+            //
+            // Uncomment the following code to test your motor directions.
+            // Each button should make the corresponding motor run FORWARD.
+            //   1) First get all the motors to take to correct positions on the robot
+            //      by adjusting your Robot Configuration if necessary.
+            //   2) Then make sure they run in the correct direction by modifying the
+            //      the setDirection() calls above.
+            // Once the correct motors move in the correct direction re-comment this code.
 
             /*
             leftFrontPower  = gamepad2.x ? 1.0 : 0.0;  // X gamepad
@@ -231,34 +201,70 @@ public class teleop extends LinearOpMode {
             rightBackPower  = gamepad2.b ? 1.0 : 0.0;  // B gamepad
             */
 
-                // Send calculated power to wheels
-                FL.setPower(leftFrontPower);
-                FR.setPower(rightFrontPower);
-                BL.setPower(leftBackPower);
-                BR.setPower(rightBackPower);
+            // Send calculated power to wheels
+            FL.setPower(leftFrontPower);
+            FR.setPower(rightFrontPower);
+            BL.setPower(leftBackPower);
+            BR.setPower(rightBackPower);
 
-                // END DRIVE
-                // SLIDES
-                if(currentGamepad1.x && !prevGamepad1.x){
-                    targetposition = intakepos;
-                }else if(currentGamepad2.x && !prevGamepad2.x){
-                    targetposition = outtakepos;
-                }
+            // END DRIVE
 
-                intakePIDF = new PIDF(intake_Kp, intake_Ki, intake_Kd, intake_Kf, tolerance);
-                outakePIDF = new PIDF(outtake_Kp, outtake_Ki, outtake_Kd, outtake_Kf, tolerance);
-//
+            // SLIDES
+
+            // INSTEAD OF using target position and the PIDFs here,
+            // call slides.setState("INTAKE CLOSE") or
+            // slides.setState("OUTTAKE")
+            if (currentGamepad2.dpad_up && !prevGamepad2.dpad_up) { // THIS USES x
+                slidesState = "SLIDES OUTTAKE";
+            }
+            if (currentGamepad2.dpad_right && !prevGamepad2.dpad_right) { // THIS USES x
+                slidesState = "FAR INTAKE";
+            }
+            if (currentGamepad2.dpad_left && !prevGamepad2.dpad_left) { // THIS USES x
+                slidesState = "CLOSE OUTTAKE";
+            }
+            if (currentGamepad2.dpad_down && !prevGamepad2.dpad_down) { // THIS ALSO USES x
+                slidesState = "SLIDES RETRACTED";
+            }
+            if (currentGamepad2.x && !prevGamepad2.x && slides.getPosition() < 20) {
+                // THIS ALSO USES x
+                slides.setState("OUTTAKE");
+            }
+            if (currentGamepad2.b && !prevGamepad2.b && slides.getPosition() < 20) { // THIS ALSO USES x
+                slides.setState("INTAKE");
+            }
+            slides.setState(slidesState);
+
+            //if(currentGamepad2.dpad_down && !prevGamepad2)
+
+
+            // I think rotate with the sticks is a bad idea.
+            // Just use rotate.rotate("INTAKE") or
+            // rotate.rotate("OUTTAKE")
+            // See the Rotate class rotate method
+            //
+            // One thing to think about is making sure that the slides
+            // are pulled in before you rotate.  You could do that by just
+            // not allowing the gamepad button to work unless the slide position
+            // is at or near 0.  (Use the getPosition() method in the Slides class
+            // to check the position.)
+            // Or you could call slides.setState("RETRACTED") when a rotate
+            // button is pressed, use a while to wait for the slides position to
+            // reach 0 (or close to 0), then call rotate.rotate("INTAKE") or
+            // rotate.rotate("OUTTAKE")
+
+
 //                rotate.armRotateL.setPower(gamepad2.right_stick_y * 240);
 //                rotate.armRotateR.setPower(gamepad2.right_stick_y * 240);
 
 
-                // Show the elapsed game time and wheel power.
-                telemetry.addData("Status", "Run Time: " + runtime.toString());
-                telemetry.addData("Front left/Right", "%4.2f, %4.2f", leftFrontPower, rightFrontPower);
-                telemetry.addData("Back  left/Right", "%4.2f, %4.2f", leftBackPower, rightBackPower);
-                telemetry.update();
-            }
+            // Show the elapsed game time and wheel power.
+
+            // You might want to add telemetry for the slides and rotation
+            // states and positions.
+            telemetry.addData("Status", "Run Time: " + runtime.toString());
+            telemetry.update();
         }
     }
-
 }
+

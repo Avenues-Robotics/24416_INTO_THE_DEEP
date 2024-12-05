@@ -81,4 +81,8 @@ public class Drive {
 
     }
 
+    public void stickDrive(){
+        // Use the gamepad sticks
+    }
+
 }
