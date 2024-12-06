@@ -9,6 +9,8 @@ public class Drive {
     DcMotor BL;
     DcMotor FR;
     DcMotor BR;
+    public DcMotor armSlideR;
+    public DcMotor armSlideL;
     public static double TICKS_PER_CM = 17.5;
     public static double TICKS_PER_DEGREE = 12;
 
@@ -40,14 +42,14 @@ public class Drive {
             BL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             FR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             BR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            FL.setPower(speed);
-            BL.setPower(speed);
-            FR.setPower(speed);
-            BR.setPower(speed);
             FL.setPower(0);
             BL.setPower(0);
             FR.setPower(0);
             BR.setPower(0);
+            FL.setPower(speed);
+            BL.setPower(speed);
+            FR.setPower(speed);
+            BR.setPower(speed);
         }
 
     }
@@ -68,15 +70,16 @@ public class Drive {
             FR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             BR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-            FL.setPower(-speed);
-            BL.setPower(-speed);
-            FR.setPower(speed);
-            BR.setPower(speed);
-
-            FL.setPower(0);
-            BL.setPower(0);
-            FR.setPower(0);
-            BR.setPower(0);
+            if(armSlideR.getCurrentPosition() + armSlideL.getCurrentPosition()/2 <= 1550) {
+                FL.setPower(-speed);
+                BL.setPower(-speed);
+                FR.setPower(speed);
+                BR.setPower(speed);
+                FL.setPower(0);
+                BL.setPower(0);
+                FR.setPower(0);
+                BR.setPower(0);
+            }
         }
 
     }

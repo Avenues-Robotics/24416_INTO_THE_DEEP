@@ -45,14 +45,14 @@ public class Slides {
             targetPosition = 0;
 //            setState("SLIDES RETRACTED CONFIRMED");
         }
-        else if(state.equals("CLOSE INTAKE")){
+        else if(state.equals("CLOSE OUTTAKE")){
             targetPosition = 500; // FIX THIS VALUE
         }
         else if(state.equals("FAR INTAKE")){
-            targetPosition = 750; // FIX THIS VALUE
+            targetPosition = 1500; // FIX THIS VALUE
         }
         else if(state.equals("SLIDES OUTTAKE")){
-            targetPosition = 1500; // FIX THIS VALUE
+            targetPosition = 3150; // FIX THIS VALUE
         }
         else{
             targetPosition = 0;
