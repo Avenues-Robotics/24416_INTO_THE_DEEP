@@ -32,8 +32,10 @@ package org.firstinspires.ftc.teamcode.teleop;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -90,7 +92,7 @@ public class Teleop extends LinearOpMode {
 
     Slides slides;
     String slidesState;
-    String rotateState;
+    String rotateState ;
     Rotate rotate;
     int slidesTarget = 0;
 
@@ -108,6 +110,8 @@ public class Teleop extends LinearOpMode {
         DcMotor BL = hardwareMap.get(DcMotor.class, "BL");
         DcMotor FR = hardwareMap.get(DcMotor.class, "FR");
         DcMotor BR = hardwareMap.get(DcMotor.class, "BR");
+        CRServo rServo = hardwareMap.get(CRServo.class, "rServo");
+        CRServo lServo = hardwareMap.get(CRServo.class, "lServo");
 
         // ########################################################################################
         // !!!            IMPORTANT Drive Information. Test your motor directions.            !!!!!
@@ -123,6 +127,8 @@ public class Teleop extends LinearOpMode {
         BL.setDirection(DcMotor.Direction.REVERSE);
         FR.setDirection(DcMotor.Direction.FORWARD);
         BR.setDirection(DcMotor.Direction.FORWARD);
+        lServo.setDirection(CRServo.Direction.FORWARD);
+        rServo.setDirection(CRServo.Direction.REVERSE);
 
         slides = new Slides(this);
         slidesState = "SLIDES RETRACTED";
@@ -232,7 +238,7 @@ public class Teleop extends LinearOpMode {
             if (currentGamepad2.dpad_down && !prevGamepad2.dpad_down) { // THIS ALSO USES x
                 slidesState = "SLIDES RETRACTED";
             }
-            slides.setState(slidesState);
+            slides.setState(slidesState, rotate);
 
             // ROTATE
             if ((currentGamepad2.x && !prevGamepad2.x) && (slides.getPosition() < 50)) {
@@ -242,7 +248,24 @@ public class Teleop extends LinearOpMode {
             if ((currentGamepad2.b && !prevGamepad2.b) && (slides.getPosition() < 50)) { // THIS ALSO USES x
                 rotateState = "INTAKE";
             }
+
             rotate.setState(rotateState);
+            if ((currentGamepad2.y && !prevGamepad2.y)){
+                lServo.setPower(-0.5);
+                rServo.setPower(-0.5);
+                sleep(400);
+                lServo.setPower(0);
+                rServo.setPower(0);
+
+            }
+            if ((currentGamepad2.a && !prevGamepad2.a)){
+                lServo.setPower(0.5);
+                rServo.setPower(0.5);
+                sleep(400);
+                lServo.setPower(0);
+                rServo.setPower(0);
+
+            }
             //if(currentGamepad2.dpad_down && !prevGamepad2)
 
 

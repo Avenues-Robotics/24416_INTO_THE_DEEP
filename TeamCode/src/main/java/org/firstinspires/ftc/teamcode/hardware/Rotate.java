@@ -28,7 +28,7 @@ public class Rotate {
 
     public static int outtakepos = 0;
 
-    public static int intakepos = -225;
+    public static int intakepos = -238;
 
     public int targetPosition;
 
@@ -55,22 +55,22 @@ public class Rotate {
 
         if (state.equals("INTAKE")) {
             targetPosition = intakepos;
-            if(currentValue <= targetPosition){
+            if(currentValue <= targetPosition + 20){
                 power = 0;
             } else{
                 int x = currentValue;
-                intakePIDF.setKf(0.5142 * Math.sin(0.01389*x + 2.037) - 0.05517);
+                intakePIDF.setKf(-(0.5142 * Math.sin(0.01389*x + 2.037) - 0.05517));
                 power = intakePIDF.update(targetPosition, currentValue);
 
             }
 
         } else if (state.equals("OUTTAKE")) {
             targetPosition = outtakepos;
-            if(currentValue >= targetPosition - 5){
+            if(currentValue >= targetPosition - 20){
                 power = 0;
             } else{
                 int x = currentValue;
-                outakePIDF.setKf(0.5142 * Math.sin(0.01389*x + 2.037) - 0.05517);
+                outakePIDF.setKf(-(0.5142 * Math.sin(0.01389*x + 2.037) - 0.05517));
                 power = outakePIDF.update(targetPosition, currentValue);
             }
         } else{
@@ -79,6 +79,10 @@ public class Rotate {
 
         armRotateR.setPower(power);
         armRotateL.setPower(power);
+    }
+
+    public int getPosition(){
+        return (armRotateL.getCurrentPosition() + armRotateR.getCurrentPosition()) / 2;
     }
 
 }

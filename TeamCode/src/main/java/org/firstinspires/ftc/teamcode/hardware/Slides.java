@@ -39,14 +39,14 @@ public class Slides {
         armSlideR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
-    public void setState(String state){
+    public void setState(String state, Rotate rotate){
         int targetPosition;
         if(state.equals("SLIDES RETRACTED")){
             targetPosition = 0;
 //            setState("SLIDES RETRACTED CONFIRMED");
         }
         else if(state.equals("CLOSE OUTTAKE")){
-            targetPosition = 500; // FIX THIS VALUE
+            targetPosition = 750; // FIX THIS VALUE
         }
         else if(state.equals("FAR INTAKE")){
             targetPosition = 1500; // FIX THIS VALUE
@@ -58,10 +58,16 @@ public class Slides {
             targetPosition = 0;
         }
 
+
         double currentValueR = armSlideR.getCurrentPosition();
         double currentValueL = armSlideL.getCurrentPosition();
         double finalPowerR = rightSlidePIDF.update(targetPosition, currentValueR);
         double finalPowerL = leftSlidePIDF.update(targetPosition, currentValueL);
+
+        if(state.equals("SLIDES RETRACTED") && (getPosition() < 100) && (rotate.getPosition() <= 25)){
+            finalPowerR = 0;
+            finalPowerL = 0;
+        }
         armSlideR.setPower(finalPowerR);
         armSlideL.setPower(finalPowerL);
     }
