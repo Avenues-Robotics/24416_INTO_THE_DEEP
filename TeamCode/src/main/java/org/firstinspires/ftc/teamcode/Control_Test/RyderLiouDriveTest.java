@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.auto;
+package org.firstinspires.ftc.teamcode.Control_Test;
 /******* This opMode is a full setup of rotation & drive functions. This is also a test for the linear slides*******/
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -68,11 +68,6 @@ public class RyderLiouDriveTest extends LinearOpMode {
 
             timer.reset();
         }
-
-        // Play around with the PARAMETERS inside the parentheses
-        // Goes forward
-
-        // Add a comment to explain what the two arguments in the addData() method do
 
     }
 
