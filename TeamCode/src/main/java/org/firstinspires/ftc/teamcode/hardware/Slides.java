@@ -1,10 +1,12 @@
 package org.firstinspires.ftc.teamcode.hardware;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.utilities.PIDF;
 
+@Config
 public class Slides {
     LinearOpMode opMode;
     public DcMotor armSlideR;
@@ -13,17 +15,23 @@ public class Slides {
     public PIDF leftSlidePIDF;
     public PIDF rightSlidePIDF;
 
-    public static double targetPosition = 0;
-    public static double KpL = 0.015;
-    public static double KpR = 0.015;
-    public static double KiR = 0;
-    public static double KiL = 0;
-    public static double KdR = 0;
-    public static double KdL = 0;
-    public static double KfR = 0.175;
-    public static double KfL = 0.175;
-    public static double toleranceL = 10;
-    public static double toleranceR = 10;
+    public double targetPosition = 0;
+    private static double KpL = 0.015;
+    private static double KpR = 0.015;
+    private static double KiR = 0;
+    private static double KiL = 0;
+    private static double KdR = 0;
+    private static double KdL = 0;
+    private static double KfR = 0.175;
+    private static double KfL = 0.175;
+    private static double toleranceL = 10;
+    private static double toleranceR = 10;
+    public static double Kstick;
+
+    public static int closeIntakePos = 700; // CHECKED
+    public static int lowOuttakePos = 1200; // CHECKED
+    public static int highOuttakePos = 2750; // CHECKED
+    public static int maxHorizontalPos = 1800; // CHECKED
 
     public Slides(LinearOpMode opModeCalledFrom){
         opMode = opModeCalledFrom;
@@ -40,44 +48,63 @@ public class Slides {
     }
 
     public void setState(String state, Rotate rotate){
-        int targetPosition;
+
         if(state.equals("SLIDES RETRACTED")){
             targetPosition = 0;
-//            setState("SLIDES RETRACTED CONFIRMED");
         }
-        else if(state.equals("CLOSE OUTTAKE")){
-            targetPosition = 750; // FIX THIS VALUE
+        else if(state.equals("CLOSE INTAKE")){
+            targetPosition = closeIntakePos;
         }
-        else if(state.equals("FAR INTAKE")){
-            targetPosition = 1500; // FIX THIS VALUE
+        else if(state.equals("LOW OUTTAKE")){
+            targetPosition = lowOuttakePos;
         }
-        else if(state.equals("SLIDES OUTTAKE")){
-            targetPosition = 3150; // FIX THIS VALUE
-        }
-        else{
-            targetPosition = 0;
+        else if(state.equals("HIGH OUTTAKE")) {
+            targetPosition = highOuttakePos;
         }
 
 
+        // SET POWER USING TARGET POSITION
         double currentValueR = armSlideR.getCurrentPosition();
         double currentValueL = armSlideL.getCurrentPosition();
         double finalPowerR = rightSlidePIDF.update(targetPosition, currentValueR);
         double finalPowerL = leftSlidePIDF.update(targetPosition, currentValueL);
 
-        if(state.equals("SLIDES RETRACTED") && (getPosition() < 100) && (rotate.getPosition() <= 25)){
+        // DEFAULT TO 0 POWER IF OUTTAKE AND RETRACTED
+        if(state.equals("SLIDES RETRACTED") && getPosition() < 200 && rotate.getPosition() >= -25){
             finalPowerR = 0;
             finalPowerL = 0;
         }
+        if(state.equals("MANUAL")){
+            double stick = opMode.gamepad2.left_stick_x;
+            if(Math.abs(stick) > 0.1){
+                if(rotate.getPosition() < -200 && getPosition() <= maxHorizontalPos){ // INTAKING
+                    Kstick = 0.2;
+                    finalPowerL = stick * Kstick;
+                    finalPowerR = stick * Kstick;
+
+                }
+                if(rotate.getPosition() > -25 && getPosition() <= highOuttakePos){ //OUTTAKING
+                    Kstick = 0.5;
+                    finalPowerL = stick * Kstick;
+                    finalPowerR = stick * Kstick;
+                }
+            }
+        }
+        else if(state.equals("HOLD")){
+            finalPowerR = rightSlidePIDF.update(targetPosition, currentValueR);
+            finalPowerL = leftSlidePIDF.update(targetPosition, currentValueL);
+        }
+
         armSlideR.setPower(finalPowerR);
         armSlideL.setPower(finalPowerL);
     }
 
-    public void setPosition(int targetPosition){
-
-    }
-
     public int getPosition(){
         return (armSlideL.getCurrentPosition() + armSlideR.getCurrentPosition()) / 2;
+    }
+
+    public void setTargetPosition(int position){
+        targetPosition = position;
     }
 
 

@@ -28,7 +28,7 @@ public class Rotate {
 
     public static int outtakepos = 0;
 
-    public static int intakepos = -238;
+    public static int intakepos = -250;
 
     public int targetPosition;
 
@@ -55,7 +55,7 @@ public class Rotate {
 
         if (state.equals("INTAKE")) {
             targetPosition = intakepos;
-            if(currentValue <= targetPosition + 20){
+            if(currentValue < intakepos + 30){
                 power = 0;
             } else{
                 int x = currentValue;
@@ -63,7 +63,6 @@ public class Rotate {
                 power = intakePIDF.update(targetPosition, currentValue);
 
             }
-
         } else if (state.equals("OUTTAKE")) {
             targetPosition = outtakepos;
             if(currentValue >= targetPosition - 20){

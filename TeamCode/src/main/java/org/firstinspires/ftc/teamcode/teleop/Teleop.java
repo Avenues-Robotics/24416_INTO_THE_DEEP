@@ -29,20 +29,15 @@
 
 package org.firstinspires.ftc.teamcode.teleop;
 
-import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.hardware.Drive;
 import org.firstinspires.ftc.teamcode.hardware.Rotate;
 import org.firstinspires.ftc.teamcode.hardware.Slides;
-import org.firstinspires.ftc.teamcode.utilities.PIDF;
 
 /*
  * This file contains an example of a Linear "OpMode".
@@ -82,22 +77,10 @@ public class Teleop extends LinearOpMode {
     // Declare OpMode members for each of the 4 motors.
     private ElapsedTime runtime = new ElapsedTime();
 
-    //    private DcMotor armRotateR;
-//    private DcMotor armRotateL;
-
-    // @ Ryder - a lot of the variables here are not needed since
-    // they are stored in either Rotate or Slides
-
-    //adjust the Kp Ki Kf Kd to diffent things based opon if it needs to go forward or back  // REMOVE
-
     Slides slides;
     String slidesState;
     String rotateState ;
     Rotate rotate;
-    int slidesTarget = 0;
-
-
-
 
     @Override
     public void runOpMode() {
@@ -127,13 +110,12 @@ public class Teleop extends LinearOpMode {
         BL.setDirection(DcMotor.Direction.REVERSE);
         FR.setDirection(DcMotor.Direction.FORWARD);
         BR.setDirection(DcMotor.Direction.FORWARD);
+
         lServo.setDirection(CRServo.Direction.FORWARD);
         rServo.setDirection(CRServo.Direction.REVERSE);
 
         slides = new Slides(this);
         slidesState = "SLIDES RETRACTED";
-
-
 
         rotate = new Rotate(this);
         rotateState = "OUTTAKE";
@@ -142,13 +124,10 @@ public class Teleop extends LinearOpMode {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
-
         waitForStart();
         runtime.reset();
 
-
         // Control Loop
-
         while (opModeIsActive()) {
 
             // Set the value of prevGamepad1/2 to the value of from the previous loop
@@ -158,10 +137,6 @@ public class Teleop extends LinearOpMode {
             // Set the value of currentGamepad1/2 to the current state of the gamepad
             currentGamepad1.copy(gamepad1);
             currentGamepad2.copy(gamepad2);
-
-
-            waitForStart();
-            runtime.reset();
 
             // run until the end of the match (driver presses STOP)
 
@@ -189,7 +164,7 @@ public class Teleop extends LinearOpMode {
             max = Math.max(max, Math.abs(leftBackPower));
             max = Math.max(max, Math.abs(rightBackPower));
 
-            if (max > 1.0) {
+            if (max > 0.5) {
                 leftFrontPower /= max;
                 rightFrontPower /= max;
                 leftBackPower /= max;
@@ -214,29 +189,33 @@ public class Teleop extends LinearOpMode {
             */
 
             // Send calculated power to wheels
-            FL.setPower(leftFrontPower);
-            FR.setPower(rightFrontPower);
-            BL.setPower(leftBackPower);
-            BR.setPower(rightBackPower);
+            FL.setPower(leftFrontPower/2);
+            FR.setPower(rightFrontPower/2);
+            BL.setPower(leftBackPower/2);
+            BR.setPower(rightBackPower/2);
 
             // END DRIVE
 
             // SLIDES
 
-            // INSTEAD OF using target position and the PIDFs here,
-            // call slides.setState("INTAKE CLOSE") or
-            // slides.setState("OUTTAKE")
-            if (currentGamepad2.dpad_up && !prevGamepad2.dpad_up) { // THIS USES x
-                slidesState = "SLIDES OUTTAKE";
-            }
-            if (currentGamepad2.dpad_right && !prevGamepad2.dpad_right) { // THIS USES x
-                slidesState = "FAR INTAKE";
-            }
-            if (currentGamepad2.dpad_left && !prevGamepad2.dpad_left) { // THIS USES x
-                slidesState = "CLOSE OUTTAKE";
-            }
-            if (currentGamepad2.dpad_down && !prevGamepad2.dpad_down) { // THIS ALSO USES x
+            if (currentGamepad2.dpad_down && !prevGamepad2.dpad_down) {
                 slidesState = "SLIDES RETRACTED";
+            }
+            if (currentGamepad2.dpad_left && !prevGamepad2.dpad_left) {
+                slidesState = "CLOSE INTAKE";
+            }
+            if (currentGamepad2.dpad_right && !prevGamepad2.dpad_right) {
+                slidesState = "LOW OUTTAKE";
+            }
+            if (currentGamepad2.dpad_up && !prevGamepad2.dpad_up) {
+                slidesState = "HIGH OUTTAKE";
+            }
+            if(Math.abs(currentGamepad2.left_stick_x) >= 0.1){
+                slidesState = "MANUAL";
+            }
+            if(slidesState.equals("MANUAL") && Math.abs(currentGamepad2.left_stick_x) < 0.1) {
+                slidesState = "HOLD";
+                slides.setTargetPosition(slides.getPosition());
             }
             slides.setState(slidesState, rotate);
 
@@ -245,66 +224,43 @@ public class Teleop extends LinearOpMode {
                 // THIS ALSO USES x
                 rotateState = "OUTTAKE";
             }
-            if ((currentGamepad2.b && !prevGamepad2.b) && (slides.getPosition() < 50)) { // THIS ALSO USES x
+            if ((currentGamepad2.b && !prevGamepad2.b) && (slides.getPosition() < 50)) {
                 rotateState = "INTAKE";
             }
 
             rotate.setState(rotateState);
-            if ((currentGamepad2.y && !prevGamepad2.y)){
-                lServo.setPower(-0.5);
-                rServo.setPower(-0.5);
-                sleep(400);
+
+            // INTAKE SERVOS
+            // INTAKE
+            if ((currentGamepad2.right_bumper)){
+                lServo.setPower(1);
+                rServo.setPower(1);
+            }
+            // OUTTAKE
+            else if ((currentGamepad2.left_bumper)) {
+                lServo.setPower(-1);
+                rServo.setPower(-1);
+            } else {
                 lServo.setPower(0);
                 rServo.setPower(0);
-
             }
-            if ((currentGamepad2.a && !prevGamepad2.a)){
-                lServo.setPower(0.5);
-                rServo.setPower(0.5);
-                sleep(400);
-                lServo.setPower(0);
-                rServo.setPower(0);
 
-            }
-            //if(currentGamepad2.dpad_down && !prevGamepad2)
+            // TELEMETRY
 
-
-            // I think rotate with the sticks is a bad idea.
-            // Just use rotate.rotate("INTAKE") or
-            // rotate.rotate("OUTTAKE")
-            // See the Rotate class rotate method
-            //
-            // One thing to think about is making sure that the slides
-            // are pulled in before you rotate.  You could do that by just
-            // not allowing the gamepad button to work unless the slide position
-            // is at or near 0.  (Use the getPosition() method in the Slides class
-            // to check the position.)
-            // Or you could call slides.setState("RETRACTED") when a rotate
-            // button is pressed, use a while to wait for the slides position to
-            // reach 0 (or close to 0), then call rotate.rotate("INTAKE") or
-            // rotate.rotate("OUTTAKE")
-
-
-//                rotate.armRotateL.setPower(gamepad2.right_stick_y * 240);
-//                rotate.armRotateR.setPower(gamepad2.right_stick_y * 240);
-
-
-            // Show the elapsed game time and wheel power.
-
-            // You might want to add telemetry for the slides and rotation
-            // states and positions.
-            telemetry.addData("Status", "Run Time: " + runtime.toString());
-            telemetry.addData("slide position", slides.getPosition());
-            telemetry.addData("String State Rotate", rotateState);
-            telemetry.addData("String State Slides", slidesState);
+            telemetry.addLine("SLIDES");
+            telemetry.addData("state", slidesState);
+            telemetry.addData("target", slides.targetPosition);
+            telemetry.addData("position", slides.getPosition());
+            telemetry.addData("power", "R:" + slides.armSlideR.getPower() + "| L:" + slides.armSlideL.getPower());
+            telemetry.addLine("");
+            telemetry.addLine("ROTATE");
+            telemetry.addData("state", rotateState);
             telemetry.addData("target position", rotate.targetPosition);
-            telemetry.addData("rotate R position", rotate.armRotateR.getCurrentPosition());
-            telemetry.addData("rotate L position", rotate.armRotateL.getCurrentPosition());
-            telemetry.addData("rotate right", rotate.armRotateR.getPower());
-            telemetry.addData("rotate left", rotate.armRotateL.getPower());
+            telemetry.addData("position", rotate.getPosition());
+            telemetry.addData("power", "R:" + rotate.armRotateR.getPower() + "| L:" + rotate.armRotateL.getPower());
             telemetry.update();
 
         }
-        }
+    }
 }
 
