@@ -8,13 +8,15 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import org.firstinspires.ftc.teamcode.hardware.Drive;
 import org.firstinspires.ftc.teamcode.hardware.Rotate;
 import org.firstinspires.ftc.teamcode.hardware.Slides;
+import org.firstinspires.ftc.teamcode.hardware.StartServo;
 
 @Config
-@Autonomous(name="RyderLiouAutoPushbotLeft {:")
-public class firstnonpushbotAuto extends LinearOpMode {
+@Autonomous(name="Right Auto")
+public class RightfirstnonpushbotAuto extends LinearOpMode {
     Drive drive;
     Slides slides;
     Rotate rotate;
+    StartServo startServo;
 
     @Override
     public void runOpMode() {
@@ -25,18 +27,22 @@ public class firstnonpushbotAuto extends LinearOpMode {
         drive = new Drive(this);
         slides = new Slides(this);
         rotate = new Rotate(this);
+        startServo = new StartServo(this);
+        startServo.start();
         waitForStart();
-        rotate.setState("INTAKE");
-        drive.Strafe_left(0.5, 50);
+        rotate.armRotateL.setPower(0.5);
+        rotate.armRotateR.setPower(0.5);
+        sleep(300);
+        rotate.armRotateL.setPower(0);
+        rotate.armRotateR.setPower(0);
+        startServo.open();
         drive.drive(0.5, 50);
-        drive.Intake();
-        drive.rotate(0.5, 30);
-        rotate.setState("OUTTAKE");
-        drive.Outtake();
-        slides.setState("SLIDES OUTTAKE", rotate.getPosition());
-        drive.rotate(0.5, -30);
-        drive.drive(0.5, 20);
-        drive.Strafe_right(0.5, 20);
+        slides.setState("LOW OUTTAKE", rotate);
+        sleep(1000);
+        slides.setState("SLIDES RETRACTED", rotate);
+        sleep(1000);
+        drive.drive(0.5, -50);
+
 
 
 

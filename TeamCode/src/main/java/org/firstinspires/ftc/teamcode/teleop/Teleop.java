@@ -164,7 +164,7 @@ public class Teleop extends LinearOpMode {
             max = Math.max(max, Math.abs(leftBackPower));
             max = Math.max(max, Math.abs(rightBackPower));
 
-            if (max > 0.5) {
+            if (max > 1) {
                 leftFrontPower /= max;
                 rightFrontPower /= max;
                 leftBackPower /= max;
@@ -189,10 +189,18 @@ public class Teleop extends LinearOpMode {
             */
 
             // Send calculated power to wheels
-            FL.setPower(leftFrontPower/2);
-            FR.setPower(rightFrontPower/2);
-            BL.setPower(leftBackPower/2);
-            BR.setPower(rightBackPower/2);
+            while(currentGamepad1.right_trigger >= 0.5){
+                FL.setPower(leftFrontPower);
+                FR.setPower(rightFrontPower);
+                BL.setPower(leftBackPower);
+                BR.setPower(rightBackPower);
+            }
+            while(currentGamepad1.right_trigger < 0.5){
+                FL.setPower(leftFrontPower/3);
+                FR.setPower(rightFrontPower/3);
+                BL.setPower(leftBackPower/3);
+                BR.setPower(rightBackPower/3);
+            }
 
             // END DRIVE
 

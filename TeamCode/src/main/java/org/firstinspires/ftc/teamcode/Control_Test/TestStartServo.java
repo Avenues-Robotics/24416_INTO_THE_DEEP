@@ -25,9 +25,9 @@ public class TestStartServo extends LinearOpMode {
 
         waitForStart();
 
-        rotate.armRotateL.setPower(startRotatePower);
-        rotate.armRotateR.setPower(startRotatePower);
-        sleep(startTime);
+        rotate.armRotateL.setPower(0.5);
+        rotate.armRotateR.setPower(0.5);
+        sleep(300);
         rotate.armRotateL.setPower(0);
         rotate.armRotateR.setPower(0);
         startServo.open();

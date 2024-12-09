@@ -31,7 +31,7 @@ public class Slides {
     public static int closeIntakePos = 700; // CHECKED
     public static int lowOuttakePos = 1200; // CHECKED
     public static int highOuttakePos = 2750; // CHECKED
-    public static int maxHorizontalPos = 1800; // CHECKED
+    public static int maxHorizontalPos = 1400; // CHECKED
 
     public Slides(LinearOpMode opModeCalledFrom){
         opMode = opModeCalledFrom;

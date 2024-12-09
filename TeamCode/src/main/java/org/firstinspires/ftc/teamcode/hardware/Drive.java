@@ -40,14 +40,22 @@ public class Drive {
     public void drive(double speed, double distance) {
         int ticks = (int) (distance * TICKS_PER_CM);
         if (opMode.opModeIsActive()) {
+            // Reset encoders
+            FL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            BL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            FR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
             FL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             FR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             BL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             BR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
             FL.setTargetPosition(ticks);
             BL.setTargetPosition(ticks);
             FR.setTargetPosition(ticks);
             BR.setTargetPosition(ticks);
+
             FL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             BL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             FR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -57,6 +65,21 @@ public class Drive {
             BL.setPower(speed);
             FR.setPower(speed);
             BR.setPower(speed);
+
+            while ( BL.getCurrentPosition() > ticks ||
+                    BR.getCurrentPosition() > ticks ||
+                    FL.getCurrentPosition() > ticks ||
+                    FR.getCurrentPosition() > ticks){  //  BL.isBusy() || BR.isBusy() || FL.isBusy() || FR.isBusy() ||
+                opMode.telemetry.addData("FL pos", FL.getCurrentPosition());
+                opMode.telemetry.addData("BL pos", BL.getCurrentPosition());
+                opMode.telemetry.addData("FR pos", FR.getCurrentPosition());
+                opMode.telemetry.addData("BR pos", BR.getCurrentPosition());
+                opMode.telemetry.update();
+            }
+            FL.setPower(0);
+            BL.setPower(0);
+            FR.setPower(0);
+            BR.setPower(0);
         }
     }
 
@@ -83,45 +106,29 @@ public class Drive {
             BL.setPower(-speed);
             FR.setPower(speed);
             BR.setPower(speed);
+            while (FL.isBusy() || FR.isBusy() || BL.isBusy() || BR.isBusy()){
+
+            }
+            FL.setPower(0);
+            BL.setPower(0);
+            FR.setPower(0);
+            BR.setPower(0);
         }
     }
 
     public void Strafe_left(double speed, double distance) {
         int ticks = (int) (distance * TICKS_PER_CM);  // Define ticks
         if (opMode.opModeIsActive()) {
-            FL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            FR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            BL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            BR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            // Reset encoders
+            FL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            BL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            FR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
             FL.setTargetPosition(ticks);
             BL.setTargetPosition(-ticks);  // Strafing left is opposite for BL and FR
-            FR.setTargetPosition(-ticks);
-            BR.setTargetPosition(ticks);  // Strafing left is opposite for BL and FR
-
-            FL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            BL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            FR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            BR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-            FL.setPower(-speed);
-            BL.setPower(speed);
-            FR.setPower(speed);
-            BR.setPower(-speed);
-        }
-    }
-    public void Strafe_right(double speed, double distance) {
-        int ticks = (int) (distance * TICKS_PER_CM);  // Define ticks
-        if (opMode.opModeIsActive()) {
-            FL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            FR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            BL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            BR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-            FL.setTargetPosition(ticks);
-            BL.setTargetPosition(-ticks);  // Strafing left is opposite for BL and FR
-            FR.setTargetPosition(-ticks);
-            BR.setTargetPosition(ticks);  // Strafing left is opposite for BL and FR
+            FR.setTargetPosition(-ticks);  // Strafing left is opposite for BL and FR
+            BR.setTargetPosition(ticks);
 
             FL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             BL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -132,29 +139,70 @@ public class Drive {
             BL.setPower(-speed);
             FR.setPower(-speed);
             BR.setPower(speed);
+
+            while (FL.isBusy() || FR.isBusy() || BL.isBusy() || BR.isBusy()){
+
+            }
+            FL.setPower(0);
+            BL.setPower(0);
+            FR.setPower(0);
+            BR.setPower(0);
         }
     }
-    public void Intake() {
-        if (opMode.opModeIsActive()){
+    public void Strafe_right(double speed, double distance) {
+        int ticks = (int) (distance * TICKS_PER_CM);  // Define ticks
+        if (opMode.opModeIsActive()) {
+            FL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            FR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            BL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            BR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+            FL.setTargetPosition(-ticks);
+            BL.setTargetPosition(ticks);  // Strafing left is opposite for BL and FR
+            FR.setTargetPosition(ticks);
+            BR.setTargetPosition(-ticks);  // Strafing left is opposite for BL and FR
+
+            FL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            BL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            FR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            BR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            FL.setPower(-speed);
+            BL.setPower(speed);
+            FR.setPower(speed);
+            BR.setPower(-speed);
+
+            while (FL.isBusy() || FR.isBusy() || BL.isBusy() || BR.isBusy()){
+
+            }
+            FL.setPower(0);
+            BL.setPower(0);
+            FR.setPower(0);
+            BR.setPower(0);
+        }
+    }
+    public void intake() {
+        if (opMode.opModeIsActive()) {
             ElapsedTime timer = new ElapsedTime();
             lServo.setPower(-0.5);
             rServo.setPower(-0.5);
-            while(timer.milliseconds() == 400) {
-                lServo.setPower(0);
-                rServo.setPower(0);
+            while (timer.milliseconds() < 2000) {
+
             }
+            lServo.setPower(0);
+            rServo.setPower(0);
         }
     }
-    public void Outtake() {
+    public void outtake() {
         if (opMode.opModeIsActive()){
             ElapsedTime timer = new ElapsedTime();
             lServo.setPower(0.5);
             rServo.setPower(0.5);
-            while(timer.milliseconds() == 400) {
-                lServo.setPower(0);
-                rServo.setPower(0);
-            }
+            while(timer.milliseconds() < 2000) {
 
+            }
+            lServo.setPower(0);
+            rServo.setPower(0);
         }
     }
 

@@ -9,6 +9,7 @@ public class StartServo {
 
     LinearOpMode opMode;
     Servo servo;
+
     public static double startPosition = 0;
     public static double openPosition = .2;
 
