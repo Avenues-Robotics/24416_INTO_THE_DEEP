@@ -189,14 +189,14 @@ public class Teleop extends LinearOpMode {
             */
 
             // Send calculated power to wheels
-            while (opModeIsActive() && currentGamepad1.right_trigger >= 0.5) {
+            if(currentGamepad1.right_trigger >= 0.5) {
                 FL.setPower(leftFrontPower);
                 FR.setPower(rightFrontPower);
                 BL.setPower(leftBackPower);
                 BR.setPower(rightBackPower);
             }
 
-            while (opModeIsActive() && currentGamepad1.right_trigger < 0.5) {
+            if(currentGamepad1.right_trigger < 0.5) {
                 FL.setPower(leftFrontPower / 3.5);
                 FR.setPower(rightFrontPower / 3.5);
                 BL.setPower(leftBackPower / 3.5);
