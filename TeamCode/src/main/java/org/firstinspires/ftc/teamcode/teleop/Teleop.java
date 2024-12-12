@@ -79,7 +79,7 @@ public class Teleop extends LinearOpMode {
 
     Slides slides;
     String slidesState;
-    String rotateState ;
+    String rotateState;
     Rotate rotate;
 
     @Override
@@ -189,18 +189,20 @@ public class Teleop extends LinearOpMode {
             */
 
             // Send calculated power to wheels
-            while(currentGamepad1.right_trigger >= 0.5){
+            while (opModeIsActive() && currentGamepad1.right_trigger >= 0.5) {
                 FL.setPower(leftFrontPower);
                 FR.setPower(rightFrontPower);
                 BL.setPower(leftBackPower);
                 BR.setPower(rightBackPower);
             }
-            while(currentGamepad1.right_trigger < 0.5){
-                FL.setPower(leftFrontPower/3);
-                FR.setPower(rightFrontPower/3);
-                BL.setPower(leftBackPower/3);
-                BR.setPower(rightBackPower/3);
+
+            while (opModeIsActive() && currentGamepad1.right_trigger < 0.5) {
+                FL.setPower(leftFrontPower / 3.5);
+                FR.setPower(rightFrontPower / 3.5);
+                BL.setPower(leftBackPower / 3.5);
+                BR.setPower(rightBackPower / 3.5);
             }
+
 
             // END DRIVE
 
@@ -218,10 +220,10 @@ public class Teleop extends LinearOpMode {
             if (currentGamepad2.dpad_up && !prevGamepad2.dpad_up) {
                 slidesState = "HIGH OUTTAKE";
             }
-            if(Math.abs(currentGamepad2.left_stick_x) >= 0.1){
+            if (Math.abs(currentGamepad2.left_stick_x) >= 0.1) {
                 slidesState = "MANUAL";
             }
-            if(slidesState.equals("MANUAL") && Math.abs(currentGamepad2.left_stick_x) < 0.1) {
+            if (slidesState.equals("MANUAL") && Math.abs(currentGamepad2.left_stick_x) < 0.1) {
                 slidesState = "HOLD";
                 slides.setTargetPosition(slides.getPosition());
             }
@@ -240,7 +242,7 @@ public class Teleop extends LinearOpMode {
 
             // INTAKE SERVOS
             // INTAKE
-            if ((currentGamepad2.right_bumper)){
+            if ((currentGamepad2.right_bumper)) {
                 lServo.setPower(1);
                 rServo.setPower(1);
             }
@@ -266,9 +268,13 @@ public class Teleop extends LinearOpMode {
             telemetry.addData("target position", rotate.targetPosition);
             telemetry.addData("position", rotate.getPosition());
             telemetry.addData("power", "R:" + rotate.armRotateR.getPower() + "| L:" + rotate.armRotateL.getPower());
+            telemetry.addData("x", currentGamepad2.x);
+            telemetry.addData("y", currentGamepad2.y);
+
             telemetry.update();
 
         }
+
+
     }
 }
-
