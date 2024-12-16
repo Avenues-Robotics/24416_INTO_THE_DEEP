@@ -123,6 +123,15 @@ public class Teleop extends LinearOpMode {
         // Wait for the game to start (driver presses START)
         telemetry.addData("Status", "Initialized");
         telemetry.update();
+        FL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        BL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        FR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        FL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        BL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        FR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        BR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         waitForStart();
         runtime.reset();
@@ -270,6 +279,10 @@ public class Teleop extends LinearOpMode {
             telemetry.addData("power", "R:" + rotate.armRotateR.getPower() + "| L:" + rotate.armRotateL.getPower());
             telemetry.addData("x", currentGamepad2.x);
             telemetry.addData("y", currentGamepad2.y);
+            telemetry.addData("BL position", BL.getCurrentPosition());
+            telemetry.addData("FR position", FR.getCurrentPosition());
+            telemetry.addData("BR position", BR.getCurrentPosition());
+            telemetry.addData("FL position", FL.getCurrentPosition());
 
             telemetry.update();
 

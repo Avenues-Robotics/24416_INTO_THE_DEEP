@@ -19,6 +19,7 @@ public class Drive {
     public DcMotor armSlideL;
     public static double TICKS_PER_CM = 17.5;
     public static double TICKS_PER_DEGREE = 12;
+    int tolerence = 10;
 
     public Drive(LinearOpMode opModeCalledFrom) {
         opMode = opModeCalledFrom;
@@ -32,6 +33,7 @@ public class Drive {
         BL.setDirection(DcMotor.Direction.REVERSE);
         FR.setDirection(DcMotor.Direction.FORWARD);
         BR.setDirection(DcMotor.Direction.FORWARD);
+
         lServo.setDirection(CRServo.Direction.FORWARD);
         rServo.setDirection(CRServo.Direction.REVERSE);
     }
@@ -40,16 +42,17 @@ public class Drive {
     public void drive(double speed, double distance) {
         int ticks = (int) (distance * TICKS_PER_CM);
         if (opMode.opModeIsActive()) {
-            // Reset encoders
-            FL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            BL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            FR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
             FL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             FR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             BL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             BR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+            // Reset encoders
+            FL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            BL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            FR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
             FL.setTargetPosition(ticks);
             BL.setTargetPosition(ticks);
@@ -66,14 +69,15 @@ public class Drive {
             FR.setPower(speed);
             BR.setPower(speed);
 
-            while ( BL.getCurrentPosition() > ticks ||
-                    BR.getCurrentPosition() > ticks ||
-                    FL.getCurrentPosition() > ticks ||
-                    FR.getCurrentPosition() > ticks){  //  BL.isBusy() || BR.isBusy() || FL.isBusy() || FR.isBusy() ||
-                opMode.telemetry.addData("FL pos", FL.getCurrentPosition());
-                opMode.telemetry.addData("BL pos", BL.getCurrentPosition());
-                opMode.telemetry.addData("FR pos", FR.getCurrentPosition());
-                opMode.telemetry.addData("BR pos", BR.getCurrentPosition());
+            while ( opMode.opModeIsActive() &&
+                    (Math.abs(BL.getCurrentPosition() - ticks) > tolerence ||
+                     Math.abs(BR.getCurrentPosition() - ticks) > tolerence ||
+                     Math.abs(FL.getCurrentPosition() - ticks) > tolerence ||
+                     Math.abs(FR.getCurrentPosition() - ticks) > tolerence)) {
+                opMode.telemetry.addData("FL pos", Math.abs(BL.getCurrentPosition() - ticks));
+                opMode.telemetry.addData("BL pos", Math.abs(BR.getCurrentPosition() - ticks));
+                opMode.telemetry.addData("FR pos", Math.abs(FL.getCurrentPosition() - ticks));
+                opMode.telemetry.addData("BR pos", Math.abs(FR.getCurrentPosition() - ticks));
                 opMode.telemetry.update();
             }
             FL.setPower(0);
@@ -106,7 +110,11 @@ public class Drive {
             BL.setPower(-speed);
             FR.setPower(speed);
             BR.setPower(speed);
-            while (FL.isBusy() || FR.isBusy() || BL.isBusy() || BR.isBusy()){
+            while (
+                    Math.abs(BL.getCurrentPosition() - ticks) < tolerence ||
+                    Math.abs(BR.getCurrentPosition() - ticks) < tolerence ||
+                    Math.abs(FL.getCurrentPosition() - ticks) < tolerence ||
+                    Math.abs(FR.getCurrentPosition() - ticks) < tolerence){
 
             }
             FL.setPower(0);
@@ -126,8 +134,8 @@ public class Drive {
             BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
             FL.setTargetPosition(ticks);
-            BL.setTargetPosition(-ticks);  // Strafing left is opposite for BL and FR
-            FR.setTargetPosition(-ticks);  // Strafing left is opposite for BL and FR
+            BL.setTargetPosition(ticks);  // Strafing left is opposite for BL and FR
+            FR.setTargetPosition(ticks);  // Strafing left is opposite for BL and FR
             BR.setTargetPosition(ticks);
 
             FL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -140,7 +148,11 @@ public class Drive {
             FR.setPower(-speed);
             BR.setPower(speed);
 
-            while (FL.isBusy() || FR.isBusy() || BL.isBusy() || BR.isBusy()){
+            while (
+                    Math.abs(BL.getCurrentPosition() - ticks) < tolerence ||
+                            Math.abs(BR.getCurrentPosition() - ticks) < tolerence ||
+                            Math.abs(FL.getCurrentPosition() - ticks) < tolerence ||
+                            Math.abs(FR.getCurrentPosition() - ticks) < tolerence){
 
             }
             FL.setPower(0);
@@ -172,7 +184,11 @@ public class Drive {
             FR.setPower(speed);
             BR.setPower(-speed);
 
-            while (FL.isBusy() || FR.isBusy() || BL.isBusy() || BR.isBusy()){
+            while (
+                    Math.abs(BL.getCurrentPosition() - ticks) < tolerence ||
+                            Math.abs(BR.getCurrentPosition() - ticks) < tolerence ||
+                            Math.abs(FL.getCurrentPosition() - ticks) < tolerence ||
+                            Math.abs(FR.getCurrentPosition() - ticks) < tolerence){
 
             }
             FL.setPower(0);
@@ -186,7 +202,7 @@ public class Drive {
             ElapsedTime timer = new ElapsedTime();
             lServo.setPower(-0.5);
             rServo.setPower(-0.5);
-            while (timer.milliseconds() < 2000) {
+            while(opMode.opModeIsActive() && timer.milliseconds() < 2000) {
 
             }
             lServo.setPower(0);
@@ -198,7 +214,7 @@ public class Drive {
             ElapsedTime timer = new ElapsedTime();
             lServo.setPower(0.5);
             rServo.setPower(0.5);
-            while(timer.milliseconds() < 2000) {
+            while(opMode.opModeIsActive() && timer.milliseconds() < 2000) {
 
             }
             lServo.setPower(0);

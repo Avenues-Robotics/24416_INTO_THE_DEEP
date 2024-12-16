@@ -20,17 +20,19 @@ public class LeftParkOnly extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        CRServo rServo = hardwareMap.get(CRServo.class, "rServo");
-        CRServo lServo = hardwareMap.get(CRServo.class, "lServo");
-        lServo.setDirection(CRServo.Direction.FORWARD);
-        rServo.setDirection(CRServo.Direction.REVERSE);
+//        CRServo rServo = hardwareMap.get(CRServo.class, "rServo");
+//        CRServo lServo = hardwareMap.get(CRServo.class, "lServo");
+//        lServo.setDirection(CRServo.Direction.FORWARD);
+//        rServo.setDirection(CRServo.Direction.REVERSE);
         drive = new Drive(this);
+
+
 //        slides = new Slides(this);
 //        rotate = new Rotate(this);
 //        startServo = new StartServo(this);
 //        startServo.start();
         waitForStart();
-        drive.drive(0.5, 20);
+        drive.drive(0.5, 50);
 //        rotate.armRotateL.setPower(0.5);
 //        rotate.armRotateR.setPower(0.5);
 //        sleep(300);

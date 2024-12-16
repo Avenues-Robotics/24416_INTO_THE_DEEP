@@ -37,8 +37,7 @@ public class RightParkOnly extends LinearOpMode {
         rotate.armRotateR.setPower(0);
         startServo.open();
         sleep(1000);
-        drive.drive(0.5,-40);
-        drive.drive(0.5, -65);
+        drive.drive(0.5,-105);
         drive.Strafe_left(0.5, 10);
         drive.rotate(0.5,45);
         rotate.setState("OUTTAKE");
