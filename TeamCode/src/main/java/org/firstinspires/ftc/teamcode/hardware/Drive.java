@@ -9,17 +9,18 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class Drive {
     LinearOpMode opMode;
-    DcMotor FL;
-    DcMotor BL;
-    DcMotor FR;
-    DcMotor BR;
+    public DcMotor FL;
+    public DcMotor BL;
+    public DcMotor FR;
+    public DcMotor BR;
+
+    // Should move intake servo code to its own class.
     CRServo lServo;
     CRServo rServo;
-    public DcMotor armSlideR;
-    public DcMotor armSlideL;
+
     public static double TICKS_PER_CM = 17.5;
     public static double TICKS_PER_DEGREE = 12;
-    int tolerence = 10;
+    int tolerance = 5;
 
     public Drive(LinearOpMode opModeCalledFrom) {
         opMode = opModeCalledFrom;
@@ -27,59 +28,81 @@ public class Drive {
         BL = opMode.hardwareMap.get(DcMotor.class, "BL");
         FR = opMode.hardwareMap.get(DcMotor.class, "FR");
         BR = opMode.hardwareMap.get(DcMotor.class, "BR");
+
+        // Move intake and outtake code to its own class
         rServo = opMode.hardwareMap.get(CRServo.class, "rServo");
         lServo = opMode.hardwareMap.get(CRServo.class, "lServo");
+
+
         FL.setDirection(DcMotor.Direction.REVERSE);
         BL.setDirection(DcMotor.Direction.REVERSE);
         FR.setDirection(DcMotor.Direction.FORWARD);
         BR.setDirection(DcMotor.Direction.FORWARD);
 
+        FL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        BL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        FR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        BR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        // Move intake and outtake code to its own class
         lServo.setDirection(CRServo.Direction.FORWARD);
         rServo.setDirection(CRServo.Direction.REVERSE);
     }
 
     // Method that drives the robot positive or negative a given distance and speed in cm
     public void drive(double speed, double distance) {
+
         int ticks = (int) (distance * TICKS_PER_CM);
+
         if (opMode.opModeIsActive()) {
 
-            FL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            FR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            BL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            BR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            FL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            BL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            FR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            BR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-            // Reset encoders
+            // Reset encoder positions to 0
             FL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             BL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             FR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
+            // Set the motor's target positions
             FL.setTargetPosition(ticks);
             BL.setTargetPosition(ticks);
             FR.setTargetPosition(ticks);
             BR.setTargetPosition(ticks);
 
+            // Turn on RUN_TO_POSITION mode
+            // Set motors to run to the given target position
             FL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             BL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             FR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             BR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
+            // Set motor power to get motors moving
             FL.setPower(speed);
             BL.setPower(speed);
             FR.setPower(speed);
             BR.setPower(speed);
 
-            while ( opMode.opModeIsActive() &&
-                    (Math.abs(BL.getCurrentPosition() - ticks) > tolerence ||
-                     Math.abs(BR.getCurrentPosition() - ticks) > tolerence ||
-                     Math.abs(FL.getCurrentPosition() - ticks) > tolerence ||
-                     Math.abs(FR.getCurrentPosition() - ticks) > tolerence)) {
-                opMode.telemetry.addData("FL pos", Math.abs(BL.getCurrentPosition() - ticks));
-                opMode.telemetry.addData("BL pos", Math.abs(BR.getCurrentPosition() - ticks));
-                opMode.telemetry.addData("FR pos", Math.abs(FL.getCurrentPosition() - ticks));
-                opMode.telemetry.addData("BR pos", Math.abs(FR.getCurrentPosition() - ticks));
+            // Wait until all motors are within tolerance of their target
+            while ( opMode.opModeIsActive() && (
+                    Math.abs(BL.getCurrentPosition() - ticks) > tolerance ||
+                    Math.abs(BR.getCurrentPosition() - ticks) > tolerance ||
+                    Math.abs(FL.getCurrentPosition() - ticks) > tolerance ||
+                    Math.abs(FR.getCurrentPosition() - ticks) > tolerance
+                    )
+                ) {
+                opMode.telemetry.addLine("IN LOOP");
+                opMode.telemetry.addData("FL pos", FL.getCurrentPosition());
+                opMode.telemetry.addData("BL pos", BL.getCurrentPosition());
+                opMode.telemetry.addData("BR pos", BR.getCurrentPosition());
+                opMode.telemetry.addData("FR pos", FR.getCurrentPosition());
                 opMode.telemetry.update();
             }
+
+            // Power motors off
             FL.setPower(0);
             BL.setPower(0);
             FR.setPower(0);
@@ -110,12 +133,18 @@ public class Drive {
             BL.setPower(-speed);
             FR.setPower(speed);
             BR.setPower(speed);
-            while (
-                    Math.abs(BL.getCurrentPosition() - ticks) < tolerence ||
-                    Math.abs(BR.getCurrentPosition() - ticks) < tolerence ||
-                    Math.abs(FL.getCurrentPosition() - ticks) < tolerence ||
-                    Math.abs(FR.getCurrentPosition() - ticks) < tolerence){
 
+            while ( opMode.opModeIsActive() && (
+                    Math.abs(BL.getCurrentPosition() - ticks) > tolerance ||
+                    Math.abs(BR.getCurrentPosition() - ticks) > tolerance ||
+                    Math.abs(FL.getCurrentPosition() - ticks) > tolerance ||
+                    Math.abs(FR.getCurrentPosition() - ticks) > tolerance)
+            ) {
+                opMode.telemetry.addData("BL pos", BL.getCurrentPosition());
+                opMode.telemetry.addData("BR pos", BR.getCurrentPosition());
+                opMode.telemetry.addData("FL pos", FL.getCurrentPosition());
+                opMode.telemetry.addData("FR pos", FR.getCurrentPosition());
+                opMode.telemetry.update();
             }
             FL.setPower(0);
             BL.setPower(0);
@@ -124,7 +153,7 @@ public class Drive {
         }
     }
 
-    public void Strafe_left(double speed, double distance) {
+    public void strafe_left(double speed, double distance) {
         int ticks = (int) (distance * TICKS_PER_CM);  // Define ticks
         if (opMode.opModeIsActive()) {
             // Reset encoders
@@ -149,10 +178,10 @@ public class Drive {
             BR.setPower(speed);
 
             while (
-                    Math.abs(BL.getCurrentPosition() - ticks) < tolerence ||
-                            Math.abs(BR.getCurrentPosition() - ticks) < tolerence ||
-                            Math.abs(FL.getCurrentPosition() - ticks) < tolerence ||
-                            Math.abs(FR.getCurrentPosition() - ticks) < tolerence){
+                    Math.abs(BL.getCurrentPosition() - ticks) < tolerance ||
+                            Math.abs(BR.getCurrentPosition() - ticks) < tolerance ||
+                            Math.abs(FL.getCurrentPosition() - ticks) < tolerance ||
+                            Math.abs(FR.getCurrentPosition() - ticks) < tolerance){
 
             }
             FL.setPower(0);
@@ -161,7 +190,8 @@ public class Drive {
             BR.setPower(0);
         }
     }
-    public void Strafe_right(double speed, double distance) {
+
+    public void strafe_right(double speed, double distance) {
         int ticks = (int) (distance * TICKS_PER_CM);  // Define ticks
         if (opMode.opModeIsActive()) {
             FL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -185,10 +215,10 @@ public class Drive {
             BR.setPower(-speed);
 
             while (
-                    Math.abs(BL.getCurrentPosition() - ticks) < tolerence ||
-                            Math.abs(BR.getCurrentPosition() - ticks) < tolerence ||
-                            Math.abs(FL.getCurrentPosition() - ticks) < tolerence ||
-                            Math.abs(FR.getCurrentPosition() - ticks) < tolerence){
+                    Math.abs(BL.getCurrentPosition() - ticks) < tolerance ||
+                            Math.abs(BR.getCurrentPosition() - ticks) < tolerance ||
+                            Math.abs(FL.getCurrentPosition() - ticks) < tolerance ||
+                            Math.abs(FR.getCurrentPosition() - ticks) < tolerance){
 
             }
             FL.setPower(0);
@@ -197,6 +227,8 @@ public class Drive {
             BR.setPower(0);
         }
     }
+
+    // Move intake and outtake code to its own class
     public void intake() {
         if (opMode.opModeIsActive()) {
             ElapsedTime timer = new ElapsedTime();
@@ -209,6 +241,8 @@ public class Drive {
             rServo.setPower(0);
         }
     }
+
+    // Move intake and outtake code to its own class
     public void outtake() {
         if (opMode.opModeIsActive()){
             ElapsedTime timer = new ElapsedTime();
