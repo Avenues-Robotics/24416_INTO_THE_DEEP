@@ -17,11 +17,11 @@ public class RightfirstnonpushbotAuto extends LinearOpMode {
     Slides slides;
     Rotate rotate;
     StartServo startServo;
-    public static double ticks_per_degree = 10.72;
+    public static double ticks_per_degree = 10.7;
     public static int strafe_1 = 20;
     public static int rotate_1 = -90;
     public static int drive_1 = 30;
-    public static int drive_2 = -30;
+    public static int drive_2 = -40;
     public static int rotate_2 = -90;
     public static int drive_3 = 70;
     @Override
@@ -43,11 +43,11 @@ public class RightfirstnonpushbotAuto extends LinearOpMode {
 //        rotate.armRotateL.setPower(0);
 //        rotate.armRotateR.setPower(0);
 //        startServo.open();
-        drive.strafe_left(0.3, strafe_1);
-        drive.rotate(0.3, rotate_1);
+        drive.strafe_left(0.5, strafe_1);
+        drive.rotate(0.5, rotate_1);
         drive.drive(0.5, drive_1);
         drive.drive(0.5, drive_2);
-        drive.rotate(0.3, rotate_2);
+        drive.rotate(0.5, rotate_2);
         drive.drive(0.5, drive_3);
 
 
