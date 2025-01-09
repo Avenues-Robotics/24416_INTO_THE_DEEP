@@ -18,12 +18,12 @@ public class LeftfirstnonpushbotAuto extends LinearOpMode {
     Rotate rotate;
     StartServo startServo;
     public static double ticks_per_degree = 10.7;
-    public static int strafe_1 = -20;
-    public static int rotate_1 = -90;
-    public static int drive_1 = 25;
+    public static int strafe_1 = 20;
+    public static int rotate_1 = 90;
+    public static int drive_1 = -25;
     public static int drive_2 = -5;
-    public static int rotate_2 = 90;
-    public static int drive_3 = -40;
+    public static int rotate_2 = -90;
+    public static int drive_3 = 40;
 
     public static int drive_4 = 100;
     @Override

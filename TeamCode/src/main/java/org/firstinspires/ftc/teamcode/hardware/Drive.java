@@ -101,7 +101,7 @@ public class Drive {
                 opMode.telemetry.addData("FR pos", FR.getCurrentPosition());
                 opMode.telemetry.update();
             }
-            opMode.sleep(500);
+            opMode.sleep(100);
             // Power motors off
             FL.setPower(0);
             BL.setPower(0);
@@ -148,7 +148,7 @@ public class Drive {
                 opMode.telemetry.addData("FR pos", FR.getCurrentPosition());
                 opMode.telemetry.update();
             }
-            opMode.sleep(500);
+            opMode.sleep(100);
             FL.setPower(0);
             BL.setPower(0);
             FR.setPower(0);
@@ -192,7 +192,7 @@ public class Drive {
                 opMode.telemetry.addData("FR pos", FR.getCurrentPosition());
                 opMode.telemetry.update();
             }
-            opMode.sleep(500);
+            opMode.sleep(100);
             FL.setPower(0);
             BL.setPower(0);
             FR.setPower(0);
@@ -205,7 +205,6 @@ public class Drive {
         if (opMode.opModeIsActive()) {
             ElapsedTime timer = new ElapsedTime();
             lServo.setPower(-0.5);
-            rServo.setPower(-0.5);
             while(opMode.opModeIsActive() && timer.milliseconds() < 2000) {
 
             }
@@ -219,7 +218,6 @@ public class Drive {
         if (opMode.opModeIsActive()){
             ElapsedTime timer = new ElapsedTime();
             lServo.setPower(0.5);
-            rServo.setPower(0.5);
             while(opMode.opModeIsActive() && timer.milliseconds() < 2000) {
 
             }
