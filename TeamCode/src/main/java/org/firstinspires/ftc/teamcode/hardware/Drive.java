@@ -205,6 +205,7 @@ public class Drive {
         if (opMode.opModeIsActive()) {
             ElapsedTime timer = new ElapsedTime();
             lServo.setPower(-0.5);
+            rServo.setPower(-0.5);
             while(opMode.opModeIsActive() && timer.milliseconds() < 2000) {
 
             }
@@ -218,6 +219,7 @@ public class Drive {
         if (opMode.opModeIsActive()){
             ElapsedTime timer = new ElapsedTime();
             lServo.setPower(0.5);
+            rServo.setPower(0.5);
             while(opMode.opModeIsActive() && timer.milliseconds() < 2000) {
 
             }

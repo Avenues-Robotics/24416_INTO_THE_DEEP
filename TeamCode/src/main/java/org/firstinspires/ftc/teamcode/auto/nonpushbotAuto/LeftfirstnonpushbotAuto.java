@@ -26,11 +26,13 @@ public class LeftfirstnonpushbotAuto extends LinearOpMode {
     public static double ticks_per_degree = 10.7;
     public static int strafe_1 = 20;
     public static int rotate_1 = 90;
-    public static int drive_1 = -55;
+    public static int drive_1 = -60;
     public static int rotate_2 = -90;
-    public static int drive_3 = 40;
-    public static int strafe_2 = -8;
-    public static int drive_4 = 100;
+    public static int rotate_3 = -90;
+    public static int drive_2 = 40;
+    public static int strafe_2 = -10;
+    public static int drive_3 = 103;
+    public static int drive_4 = 4;
     @Override
     public void runOpMode() {
         CRServo rServo = hardwareMap.get(CRServo.class, "rServo");
@@ -54,16 +56,25 @@ public class LeftfirstnonpushbotAuto extends LinearOpMode {
         drive.rotate(0.5, rotate_1);
         drive.strafe_left(0.5, strafe_2);
         drive.drive(0.5, drive_1);
-        while(opModeIsActive() && slides.getPosition() < slides.closeIntakePos){
+        while(opModeIsActive() && slides.getPosition() < slides.closeIntakePos) {
             slides.setState("CLOSE INTAKE", rotate);
         }
-        while(opModeIsActive() && slides.getPosition() < slides.closeIntakePos) {
+        while(opModeIsActive() && slides.getPosition() >= slides.slidesRetractedPos + 5) {
             slides.setState("SLIDES RETRACTED", rotate);
         }
-        slides.setState("SLIDES RETRACTED", rotate);
-        drive.drive(0.5, drive_3);
+        drive.drive(0.5, drive_2);
         drive.rotate(0.5, rotate_2);
-        drive.drive(0.5,drive_4);
+        drive.drive(0.5,drive_3);
+        drive.rotate(0.5, rotate_3);
+
+        while(opModeIsActive() && rotate.getPosition() >= rotate.intakepos) {
+            rotate.setState("INTAKE");
+        }
+        while(opModeIsActive() && slides.getPosition() < slides.closeIntakePos)  {
+            slides.setState("CLOSE INTAKE", rotate);
+        }
+        drive.drive(0.5, drive_4);
+        drive.intake();
 
 
 

@@ -28,9 +28,10 @@ public class Slides {
     private static double toleranceR = 10;
     public static double Kstick;
 
-    public static int closeIntakePos = 700; // CHECKED
+    public static int closeIntakePos = 850; // CHECKED
     public static int lowOuttakePos = 1200; // CHECKED
     public static int highOuttakePos = 2750; // CHECKED
+    public static int slidesRetractedPos = 0;
     public static int maxHorizontalPos = 1400; // CHECKED
 
     public Slides(LinearOpMode opModeCalledFrom){
@@ -50,7 +51,7 @@ public class Slides {
     public void setState(String state, Rotate rotate){
 
         if(state.equals("SLIDES RETRACTED")){
-            targetPosition = 0;
+            targetPosition = slidesRetractedPos;
         }
         else if(state.equals("CLOSE INTAKE")){
             targetPosition = closeIntakePos;
