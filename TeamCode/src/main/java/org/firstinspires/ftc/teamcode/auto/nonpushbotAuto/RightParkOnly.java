@@ -38,7 +38,7 @@ public class RightParkOnly extends LinearOpMode {
         startServo.open();
         sleep(1000);
         drive.drive(0.5,-105);
-        drive.Strafe_left(0.5, 10);
+        drive.strafe_left(0.5, 10);
         drive.rotate(0.5,45);
         rotate.setState("OUTTAKE");
         sleep(1000);
@@ -48,7 +48,7 @@ public class RightParkOnly extends LinearOpMode {
         slides.setState("SLIDES RETRACTED", rotate);
         rotate.setState("INTAKE");
         drive.rotate(0.5, -45);
-        drive.Strafe_left(0.5, 10);
+        drive.strafe_left(0.5, 10);
         drive.drive(0.5,50);
         drive.drive(0.5, -100);
 

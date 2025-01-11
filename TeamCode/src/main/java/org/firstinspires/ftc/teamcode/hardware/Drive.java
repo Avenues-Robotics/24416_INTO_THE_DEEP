@@ -19,7 +19,7 @@ public class Drive {
     CRServo rServo;
 
     public static double TICKS_PER_CM = 17.5;
-    public static double TICKS_PER_DEGREE = 12;
+    public static double TICKS_PER_DEGREE = 10.72;
     int tolerance = 5;
 
     public Drive(LinearOpMode opModeCalledFrom) {
@@ -101,7 +101,7 @@ public class Drive {
                 opMode.telemetry.addData("FR pos", FR.getCurrentPosition());
                 opMode.telemetry.update();
             }
-
+            opMode.sleep(100);
             // Power motors off
             FL.setPower(0);
             BL.setPower(0);
@@ -119,25 +119,27 @@ public class Drive {
             FR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-            FL.setTargetPosition(-ticks);
+
             BL.setTargetPosition(-ticks);
-            FR.setTargetPosition(ticks);
             BR.setTargetPosition(ticks);
+            FL.setTargetPosition(-ticks);
+            FR.setTargetPosition(ticks);
+
 
             FL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             BL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             FR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             BR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-            FL.setPower(-speed);
-            BL.setPower(-speed);
+            FL.setPower(speed);
+            BL.setPower(speed);
             FR.setPower(speed);
             BR.setPower(speed);
 
             while ( opMode.opModeIsActive() && (
-                    Math.abs(BL.getCurrentPosition() - ticks) > tolerance ||
+                    Math.abs(BL.getCurrentPosition() + ticks) > tolerance ||
                     Math.abs(BR.getCurrentPosition() - ticks) > tolerance ||
-                    Math.abs(FL.getCurrentPosition() - ticks) > tolerance ||
+                    Math.abs(FL.getCurrentPosition() + ticks) > tolerance ||
                     Math.abs(FR.getCurrentPosition() - ticks) > tolerance)
             ) {
                 opMode.telemetry.addData("BL pos", BL.getCurrentPosition());
@@ -146,6 +148,7 @@ public class Drive {
                 opMode.telemetry.addData("FR pos", FR.getCurrentPosition());
                 opMode.telemetry.update();
             }
+            opMode.sleep(100);
             FL.setPower(0);
             BL.setPower(0);
             FR.setPower(0);
@@ -163,8 +166,8 @@ public class Drive {
             BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
             FL.setTargetPosition(ticks);
-            BL.setTargetPosition(ticks);  // Strafing left is opposite for BL and FR
-            FR.setTargetPosition(ticks);  // Strafing left is opposite for BL and FR
+            BL.setTargetPosition(-ticks);  // Strafing left is opposite for BL and FR
+            FR.setTargetPosition(-ticks);  // Strafing left is opposite for BL and FR
             BR.setTargetPosition(ticks);
 
             FL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -173,54 +176,23 @@ public class Drive {
             BR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
             FL.setPower(speed);
-            BL.setPower(-speed);
-            FR.setPower(-speed);
-            BR.setPower(speed);
-
-            while (
-                    Math.abs(BL.getCurrentPosition() - ticks) < tolerance ||
-                            Math.abs(BR.getCurrentPosition() - ticks) < tolerance ||
-                            Math.abs(FL.getCurrentPosition() - ticks) < tolerance ||
-                            Math.abs(FR.getCurrentPosition() - ticks) < tolerance){
-
-            }
-            FL.setPower(0);
-            BL.setPower(0);
-            FR.setPower(0);
-            BR.setPower(0);
-        }
-    }
-
-    public void strafe_right(double speed, double distance) {
-        int ticks = (int) (distance * TICKS_PER_CM);  // Define ticks
-        if (opMode.opModeIsActive()) {
-            FL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            FR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            BL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            BR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-            FL.setTargetPosition(-ticks);
-            BL.setTargetPosition(ticks);  // Strafing left is opposite for BL and FR
-            FR.setTargetPosition(ticks);
-            BR.setTargetPosition(-ticks);  // Strafing left is opposite for BL and FR
-
-            FL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            BL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            FR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            BR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-            FL.setPower(-speed);
             BL.setPower(speed);
             FR.setPower(speed);
-            BR.setPower(-speed);
+            BR.setPower(speed);
 
-            while (
-                    Math.abs(BL.getCurrentPosition() - ticks) < tolerance ||
-                            Math.abs(BR.getCurrentPosition() - ticks) < tolerance ||
-                            Math.abs(FL.getCurrentPosition() - ticks) < tolerance ||
-                            Math.abs(FR.getCurrentPosition() - ticks) < tolerance){
-
+            while (opMode.opModeIsActive() && (
+                    Math.abs(BL.getCurrentPosition() - (-ticks)) > tolerance ||
+                    Math.abs(BR.getCurrentPosition() - ticks) > tolerance ||
+                    Math.abs(FL.getCurrentPosition() - ticks) > tolerance ||
+                    Math.abs(FR.getCurrentPosition() - (-ticks)) > tolerance
+            )){
+                opMode.telemetry.addData("BL pos", BL.getCurrentPosition());
+                opMode.telemetry.addData("BR pos", BR.getCurrentPosition());
+                opMode.telemetry.addData("FL pos", FL.getCurrentPosition());
+                opMode.telemetry.addData("FR pos", FR.getCurrentPosition());
+                opMode.telemetry.update();
             }
+            opMode.sleep(100);
             FL.setPower(0);
             BL.setPower(0);
             FR.setPower(0);
