@@ -232,6 +232,7 @@ public class Teleop extends LinearOpMode {
             }
             if (Math.abs(currentGamepad2.left_stick_x) >= 0.1) {
                 slidesState = "MANUAL";
+                slides.setTargetPosition(slides.getPosition() + 1);
             }
             if (slidesState.equals("MANUAL") && Math.abs(currentGamepad2.left_stick_x) < 0.1) {
                 slidesState = "HOLD";
