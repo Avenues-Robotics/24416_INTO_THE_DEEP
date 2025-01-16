@@ -71,7 +71,7 @@ public class Slides {
         double finalPowerL = leftSlidePIDF.update(targetPosition, currentValueL);
 
         // DEFAULT TO 0 POWER IF OUTTAKE AND RETRACTED
-        if(state.equals("SLIDES RETRACTED") && getPosition() < 200 && rotate.getPosition() >= -25){
+        if(state.equals("SLIDES RETRACTED") && getPosition() < 200 && rotate.getPosition() <= 50){
             finalPowerR = 0;
             finalPowerL = 0;
         }
