@@ -54,8 +54,11 @@ public class RightfirstnonpushbotAuto extends LinearOpMode {
         }
 
         while(opModeIsActive() && slides.getPosition() >= slides.slidesRetractedPos + 20) {
+            lServo.setPower(1);
+            rServo.setPower(1);
             slides.setState("SLIDES RETRACTED", rotate);
         }
+
         drive.drive(0.5, drive_2);
         drive.rotate(0.5, rotate_2);
         drive.drive(0.5, drive_3);

@@ -31,7 +31,7 @@ public class LeftfirstnonpushbotAuto extends LinearOpMode {
     public static int rotate_3 = -90;
     public static int drive_2 = 40;
     public static int strafe_2 = -10;
-    public static int drive_3 = 103;
+    public static int drive_3 = 100;
     public static int drive_4 = 4;
     @Override
     public void runOpMode() {
@@ -40,7 +40,7 @@ public class LeftfirstnonpushbotAuto extends LinearOpMode {
         lServo.setDirection(CRServo.Direction.FORWARD);
         rServo.setDirection(CRServo.Direction.REVERSE);
         drive = new Drive(this);
-        drive.TICKS_PER_DEGREE = ticks_per_degree;
+        Drive.TICKS_PER_DEGREE = ticks_per_degree;
         slides = new Slides(this);
         rotate = new Rotate(this);
         startServo = new StartServo(this);
@@ -56,22 +56,35 @@ public class LeftfirstnonpushbotAuto extends LinearOpMode {
         drive.rotate(0.5, rotate_1);
         drive.strafe_left(0.5, strafe_2);
         drive.drive(0.5, drive_1);
-        while(opModeIsActive() && slides.getPosition() < slides.closeIntakePos) {
+        while(opModeIsActive() && slides.getPosition() < Slides.closeIntakePos) {
             slides.setState("CLOSE INTAKE", rotate);
         }
-        while(opModeIsActive() && slides.getPosition() >= slides.slidesRetractedPos + 5) {
+        lServo.setPower(1);
+        rServo.setPower(1);
+        while(opModeIsActive() && slides.getPosition() >= Slides.slidesRetractedPos + 5) {
             slides.setState("SLIDES RETRACTED", rotate);
         }
+        lServo.setPower(0);
+        rServo.setPower(0);
         drive.drive(0.5, drive_2);
         drive.rotate(0.5, rotate_2);
         drive.drive(0.5,drive_3);
         drive.rotate(0.5, rotate_3);
-
-        while(opModeIsActive() && rotate.getPosition() >= rotate.intakepos) {
-            rotate.setState("INTAKE");
-        }
-        while(opModeIsActive() && slides.getPosition() < slides.closeIntakePos)  {
-            slides.setState("CLOSE INTAKE", rotate);
+//       Set intake position to -225?
+//        while(opModeIsActive() && rotate.getPosition() >= Rotate.intakepos) {
+//            rotate.setState("INTAKE");
+//        }
+        // USe sleep?
+        rotate.setState("INTAKE");
+        sleep(500);
+        while(opModeIsActive() && slides.getPosition() < Slides.CloseIntakeAutoPos)  {
+//            slides.setState("CLOSE AUTO INTAKE", rotate);
+            // set to Manual?
+            slides.setState("Manual", rotate);
+            slides.armSlideL.setPower(.25);
+            slides.armSlideR.setPower(.25);
+            lServo.setPower(-1);
+            rServo.setPower(-1);
         }
         drive.drive(0.5, drive_4);
         drive.intake();
