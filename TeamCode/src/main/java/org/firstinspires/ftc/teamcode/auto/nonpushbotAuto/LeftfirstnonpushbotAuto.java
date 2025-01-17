@@ -33,6 +33,8 @@ public class LeftfirstnonpushbotAuto extends LinearOpMode {
     private DistanceSensor sensorDistance;
     private DistanceSensor sensorDistance2;
 
+    double distance;
+
     public static double ticks_per_degree = 10.7;
     public static int strafe_1 = 20;
     public static int rotate_1 = 90;
@@ -43,7 +45,6 @@ public class LeftfirstnonpushbotAuto extends LinearOpMode {
     public static int strafe_2 = -15;
     public static int opDrive_3 = 30;
     public static int drive_4 = 10;
-    double distance = (sensorDistance.getDistance(DistanceUnit.CM) + sensorDistance2.getDistance(DistanceUnit.CM))/2;
     @Override
     public void runOpMode() {
         CRServo rServo = hardwareMap.get(CRServo.class, "rServo");
@@ -82,11 +83,13 @@ public class LeftfirstnonpushbotAuto extends LinearOpMode {
         rServo.setPower(0);
         drive.drive(0.5, drive_2);
         drive.rotate(0.5, rotate_2);
+        distance = (sensorDistance.getDistance(DistanceUnit.CM) + sensorDistance2.getDistance(DistanceUnit.CM))/2;
         while(distance > opDrive_3){
             FR.setPower(0.5);
             FL.setPower(0.5);
             BR.setPower(0.5);
             BL.setPower(0.5);
+            distance = (sensorDistance.getDistance(DistanceUnit.CM) + sensorDistance2.getDistance(DistanceUnit.CM))/2;
         }
         drive.rotate(0.5, rotate_3);
 //       Set intake position to -225?
