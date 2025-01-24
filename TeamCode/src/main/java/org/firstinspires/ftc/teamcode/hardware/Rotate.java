@@ -29,6 +29,7 @@ public class Rotate {
     public static int outtakepos = 0;
 
     public static int intakepos = -250;
+    public static int emergencyPos = 250;
 
     public int targetPosition;
 
@@ -71,6 +72,13 @@ public class Rotate {
                 int x = currentValue;
                 outakePIDF.setKf(-(0.5142 * Math.sin(0.01389*x + 2.037) - 0.05517));
                 power = outakePIDF.update(targetPosition, currentValue);
+            }
+        }else if(state.equals("EMERGENCY")) {
+            targetPosition = emergencyPos;
+            if(currentValue >= targetPosition - 75){
+                power = 0;
+            } else{
+                power = 1;
             }
         } else{
             power = 0;

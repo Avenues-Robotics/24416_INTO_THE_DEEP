@@ -248,7 +248,10 @@ public class Teleop extends LinearOpMode {
             if ((currentGamepad2.b && !prevGamepad2.b) && (slides.getPosition() < 50)) {
                 rotateState = "INTAKE";
             }
-
+            // EMERGENCY BUTTON
+            if ((currentGamepad2.share  && !prevGamepad2.share) && (slides.getPosition() < 50)) {
+                rotateState = "EMERGENCY";
+            }
             rotate.setState(rotateState);
 
             // INTAKE SERVOS
@@ -285,6 +288,7 @@ public class Teleop extends LinearOpMode {
             telemetry.addData("FR position", FR.getCurrentPosition());
             telemetry.addData("BR position", BR.getCurrentPosition());
             telemetry.addData("FL position", FL.getCurrentPosition());
+            telemetry.addData("Left stick X", currentGamepad2.left_stick_x);
 
             telemetry.update();
 

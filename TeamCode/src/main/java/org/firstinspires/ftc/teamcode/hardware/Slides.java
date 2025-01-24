@@ -72,10 +72,10 @@ public class Slides {
         double currentValueR = armSlideR.getCurrentPosition();
         double currentValueL = armSlideL.getCurrentPosition();
         double finalPowerR = rightSlidePIDF.update(targetPosition, currentValueR);
-        double finalPowerL = leftSlidePIDF.update(targetPosition, currentValueL);
+        double finalPowerL = leftSlidePIDF.update(targetPosition, currentValueR);
 
         // DEFAULT TO 0 POWER IF OUTTAKE AND RETRACTED
-        if(state.equals("SLIDES RETRACTED") && getPosition() < 200 && rotate.getPosition() <= 50){
+        if(state.equals("SLIDES RETRACTED") && getPosition() < 200 && rotate.getPosition() >= -50){
             finalPowerR = 0;
             finalPowerL = 0;
         }
@@ -83,12 +83,17 @@ public class Slides {
             double stick = opMode.gamepad2.left_stick_x;
             if(Math.abs(stick) > 0.1){
                 if(rotate.getPosition() < -200 && getPosition() <= maxHorizontalPos){ // INTAKING
-                    Kstick = 0.2;
+                    Kstick = 0.4;
                     finalPowerL = stick * Kstick;
                     finalPowerR = stick * Kstick;
 
                 }
-                if(rotate.getPosition() > -25 && getPosition() <= highOuttakePos){ //OUTTAKING
+                else if(rotate.getPosition() > -25 && getPosition() <= highOuttakePos){ //OUTTAKING
+                    Kstick = 0.5;
+                    finalPowerL = stick * Kstick;
+                    finalPowerR = stick * Kstick;
+                }
+                else{
                     Kstick = 0.5;
                     finalPowerL = stick * Kstick;
                     finalPowerR = stick * Kstick;

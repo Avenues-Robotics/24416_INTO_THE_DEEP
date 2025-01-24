@@ -20,7 +20,7 @@ public class Drive {
 
     public static double TICKS_PER_CM = 17.5;
     public static double TICKS_PER_DEGREE = 10.72;
-    int tolerance = 5;
+    int tolerance = 11;
 
     public Drive(LinearOpMode opModeCalledFrom) {
         opMode = opModeCalledFrom;
@@ -202,30 +202,20 @@ public class Drive {
 
     // Move intake and outtake code to its own class
     public void intake() {
-        if (opMode.opModeIsActive()) {
-            ElapsedTime timer = new ElapsedTime();
-            lServo.setPower(-0.5);
-            rServo.setPower(-0.5);
-            while(opMode.opModeIsActive() && timer.milliseconds() < 2000) {
-
-            }
-            lServo.setPower(0);
-            rServo.setPower(0);
-        }
+        lServo.setPower(1);
+        rServo.setPower(1);
     }
 
     // Move intake and outtake code to its own class
     public void outtake() {
-        if (opMode.opModeIsActive()){
-            ElapsedTime timer = new ElapsedTime();
-            lServo.setPower(0.5);
-            rServo.setPower(0.5);
-            while(opMode.opModeIsActive() && timer.milliseconds() < 2000) {
+        lServo.setPower(-1);
+        rServo.setPower(-1);
 
-            }
-            lServo.setPower(0);
-            rServo.setPower(0);
-        }
+    }
+
+    public void intakeStop() {
+        lServo.setPower(0);
+        rServo.setPower(0);
     }
 
     public void stickDrive() {

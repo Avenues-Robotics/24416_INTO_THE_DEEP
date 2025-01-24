@@ -17,7 +17,7 @@ import org.firstinspires.ftc.teamcode.hardware.Slides;
 import org.firstinspires.ftc.teamcode.hardware.StartServo;
 
 @Config
-@Autonomous(name="Left Auto 1234")
+@Autonomous(name="Left Auto Specimen and Sample 1234")
 public class LeftfirstnonpushbotAuto extends LinearOpMode {
     Drive drive;
     Slides slides;
@@ -34,8 +34,6 @@ public class LeftfirstnonpushbotAuto extends LinearOpMode {
     private DistanceSensor sensorDistance2;
 
     double distance;
-
-    public static double ticks_per_degree = 10.7;
     public static int strafe_1 = 20;
     public static int rotate_1 = 90;
     public static int drive_1 = -60;
@@ -43,8 +41,9 @@ public class LeftfirstnonpushbotAuto extends LinearOpMode {
     public static int rotate_3 = -90;
     public static int drive_2 = 40;
     public static int strafe_2 = -15;
-    public static int opDrive_3 = 30;
-    public static int drive_4 = 10;
+    public static int Drive_3 = 99;
+    public static int drive_4 = 20;
+
     @Override
     public void runOpMode() {
         CRServo rServo = hardwareMap.get(CRServo.class, "rServo");
@@ -54,7 +53,6 @@ public class LeftfirstnonpushbotAuto extends LinearOpMode {
         lServo.setDirection(CRServo.Direction.FORWARD);
         rServo.setDirection(CRServo.Direction.REVERSE);
         drive = new Drive(this);
-        Drive.TICKS_PER_DEGREE = ticks_per_degree;
         slides = new Slides(this);
         rotate = new Rotate(this);
         startServo = new StartServo(this);
@@ -66,51 +64,92 @@ public class LeftfirstnonpushbotAuto extends LinearOpMode {
 //        sleep(300);
 //        rotate.armRotateL.setPower(0);
 //        rotate.armRotateR.setPower(0);
+
+        distance = (sensorDistance.getDistance(DistanceUnit.CM) + sensorDistance2.getDistance(DistanceUnit.CM)) / 2;
+        telemetry.addData("distance", distance);
+        telemetry.update();
+
+            //        } FOR TESTING
         startServo.open();
-        drive.strafe_left(1, strafe_1);
-        drive.rotate(1, rotate_1);
-        drive.strafe_left(1, strafe_2);
-        drive.drive(1, drive_1);
+        drive.strafe_left(0.6, strafe_1);
+        drive.rotate(0.6, rotate_1);
+        drive.strafe_left(0.6, strafe_2);
+        drive.drive(0.6, drive_1);
         while(opModeIsActive() && slides.getPosition() < Slides.closeIntakePos) {
             slides.setState("CLOSE INTAKE", rotate);
         }
-        lServo.setPower(1);
-        rServo.setPower(1);
         while(opModeIsActive() && slides.getPosition() >= Slides.slidesRetractedPos + 5) {
             slides.setState("SLIDES RETRACTED", rotate);
         }
-        lServo.setPower(0);
-        rServo.setPower(0);
-        drive.drive(0.5, drive_2);
-        drive.rotate(0.5, rotate_2);
-        distance = (sensorDistance.getDistance(DistanceUnit.CM) + sensorDistance2.getDistance(DistanceUnit.CM))/2;
-        while(distance > opDrive_3){
-            FR.setPower(0.5);
-            FL.setPower(0.5);
-            BR.setPower(0.5);
-            BL.setPower(0.5);
-            distance = (sensorDistance.getDistance(DistanceUnit.CM) + sensorDistance2.getDistance(DistanceUnit.CM))/2;
+        drive.drive(0.6, drive_2);
+        drive.rotate(0.6, rotate_2);
+        drive.drive(0.8, Drive_3);
+//        distance = (sensorDistance.getDistance(DistanceUnit.CM) + sensorDistance2.getDistance(DistanceUnit.CM))/2;
+//      SUPER COOL DISTANCE SENSOR CODE
+//        telemetry.addData("distance", distance);
+//        telemetry.update();
+//        while(distance > opDrive_3){
+//            FR.setPower(0.5);
+//            FL.setPower(0.5);
+//            BR.setPower(0.5);
+//            BL.setPower(0.5);
+//            distance = (sensorDistance.getDistance(DistanceUnit.CM) + sensorDistance2.getDistance(DistanceUnit.CM))/2;
+//            telemetry.addData("distance", distance);
+//            telemetry.update();
+
+        drive.rotate(0.6, rotate_3);     startServo.open();
+        drive.strafe_left(0.6, strafe_1);
+        drive.rotate(0.6, rotate_1);
+        drive.strafe_left(0.6, strafe_2);
+        drive.drive(0.6, drive_1);
+        while(opModeIsActive() && slides.getPosition() < Slides.closeIntakePos) {
+            slides.setState("CLOSE INTAKE", rotate);
         }
-        drive.rotate(0.5, rotate_3);
+        while(opModeIsActive() && slides.getPosition() >= Slides.slidesRetractedPos + 5) {
+            slides.setState("SLIDES RETRACTED", rotate);
+        }
+        drive.drive(0.6, drive_2);
+        drive.rotate(0.6, rotate_2);
+        drive.drive(0.8, Drive_3);
+//        distance = (sensorDistance.getDistance(DistanceUnit.CM) + sensorDistance2.getDistance(DistanceUnit.CM))/2;
+//      SUPER COOL DISTANCE SENSOR CODE
+//        telemetry.addData("distance", distance);
+//        telemetry.update();
+//        while(distance > opDrive_3){
+//            FR.setPower(0.5);
+//            FL.setPower(0.5);
+//            BR.setPower(0.5);
+//            BL.setPower(0.5);
+//            distance = (sensorDistance.getDistance(DistanceUnit.CM) + sensorDistance2.getDistance(DistanceUnit.CM))/2;
+//            telemetry.addData("distance", distance);
+//            telemetry.update();
+//        }
+        drive.rotate(0.6, rotate_3);
 //       Set intake position to -225?
 //        while(opModeIsActive() && rotate.getPosition() >= Rotate.intakepos) {
 //            rotate.setState("INTAKE");
 //        }
-        // USe sleep?
-        rotate.setState("INTAKE");
-        sleep(500);
-        while(opModeIsActive() && slides.getPosition() < Slides.CloseIntakeAutoPos)  {
-//            slides.setState("CLOSE AUTO INTAKE", rotate);
-            // set to Manual?
-            slides.setState("CLOSE INTAKE", rotate);
-        }
-        drive.drive(1, drive_4);
-        drive.intake();
+//        // USe sleep?
+            while (opModeIsActive() && rotate.getPosition() > (rotate.intakepos + 15)) {
+                rotate.setState("INTAKE");
+            }
+            sleep(500);
 
-
-
-
-
+            while (opModeIsActive() && slides.getPosition() < Slides.CloseIntakeAutoPos) {
+                // set to Manual?
+                slides.setState("CLOSE AUTO INTAKE", rotate);
+            }
+            drive.intake();
+            drive.drive(0.6, drive_4);
+            sleep(2500);
+            drive.intakeStop();
+            while (opModeIsActive() && slides.getPosition() > (Slides.slidesRetractedPos)) {
+                slides.setState("SLIDES RETRACTED", rotate);
+            }
+            while (opModeIsActive() && rotate.getPosition() < Rotate.outtakepos) {
+                rotate.setState("OUTTAKE");
+            }
 
     }
 }
+
