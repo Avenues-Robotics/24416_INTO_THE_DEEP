@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.auto.nonpushbotAuto;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 
@@ -39,12 +40,12 @@ public class RightfirstnonpushbotAuto extends LinearOpMode {
         startServo = new StartServo(this);
         startServo.start();
         waitForStart();
-//        rotate.armRotateL.setPower(0.5);
-//        rotate.armRotateR.setPower(0.5);
-//        sleep(300);
-//        rotate.armRotateL.setPower(0);
-//        rotate.armRotateR.setPower(0);
-//        startServo.open();
+        rotate.armRotateL.setPower(0.5);
+        rotate.armRotateR.setPower(0.5);
+        sleep(300);
+        rotate.armRotateL.setPower(0);
+        rotate.armRotateR.setPower(0);
+        startServo.open();
         drive.strafe_left(0.5, strafe_1);
         drive.rotate(0.5, rotate_1);
         drive.strafe_left(0.5, strafe_2);

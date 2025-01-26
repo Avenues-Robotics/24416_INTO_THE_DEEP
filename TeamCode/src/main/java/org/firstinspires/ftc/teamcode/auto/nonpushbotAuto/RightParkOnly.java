@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.auto.nonpushbotAuto;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 
@@ -12,6 +13,7 @@ import org.firstinspires.ftc.teamcode.hardware.StartServo;
 
 @Config
 @Autonomous(name="Right Park Only")
+@Disabled
 public class RightParkOnly extends LinearOpMode {
     Drive drive;
     Slides slides;

@@ -18,7 +18,7 @@ import org.firstinspires.ftc.teamcode.hardware.Slides;
 import org.firstinspires.ftc.teamcode.hardware.StartServo;
 
 @Config
-@Autonomous(name="Left Auto Specimen Sample 1234")
+@Autonomous(name="Left Sample 1234")
 public class ReworkofLeftAutononPushbot extends LinearOpMode {
     Drive drive;
     Slides slides;
@@ -63,11 +63,11 @@ public class ReworkofLeftAutononPushbot extends LinearOpMode {
 
         waitForStart();
         drive.drive(0.6, drive_1);
-//        rotate.armRotateL.setPower(0.5);
-//        rotate.armRotateR.setPower(0.5);
-//        sleep(300);
-//        rotate.armRotateL.setPower(0);
-//        rotate.armRotateR.setPower(0);
+        rotate.armRotateL.setPower(0.5);
+        rotate.armRotateR.setPower(0.5);
+        sleep(300);
+        rotate.armRotateL.setPower(0);
+        rotate.armRotateR.setPower(0);
         startServo.open();
         drive.rotate(0.5, rotate_1);
         drive.drive(0.6, drive_2);

@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.auto.nonpushbotAuto;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -18,6 +19,7 @@ import org.firstinspires.ftc.teamcode.hardware.StartServo;
 
 @Config
 @Autonomous(name="Left Auto Specimen and Sample 1234")
+@Disabled
 public class LeftfirstnonpushbotAuto extends LinearOpMode {
     Drive drive;
     Slides slides;
