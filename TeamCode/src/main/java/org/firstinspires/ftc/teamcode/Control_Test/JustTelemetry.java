@@ -42,10 +42,14 @@ public class JustTelemetry extends LinearOpMode {
             telemetry.addData("BR pos", drive.BR.getCurrentPosition());
             telemetry.addData("FL pos", drive.FL.getCurrentPosition());
             telemetry.addData("FR pos", drive.FR.getCurrentPosition());
-            telemetry.update();
 
             dashboardTelemetry.addData("Slide position", slides.getPosition());
             dashboardTelemetry.addData("Rotate position", rotate.getPosition());
+            dashboardTelemetry.addData("Rotate positionL", rotate.getPositionL());
+            dashboardTelemetry.addData("Rotate positionR", rotate.getPositionR());
+            dashboardTelemetry.addData("Slide positionL", slides.armSlideL.getCurrentPosition());
+            dashboardTelemetry.addData("Slide positionR", slides.armSlideR.getCurrentPosition());
+
             dashboardTelemetry.update();
         }
     }

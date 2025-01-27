@@ -28,7 +28,7 @@ public class Rotate {
 
     public static int outtakepos = 0;
 
-    public static int intakepos = -250;
+    public static int intakepos = -235;
     public static int emergencyPos = 250;
 
     public int targetPosition;
@@ -90,6 +90,12 @@ public class Rotate {
 
     public int getPosition(){
         return (armRotateL.getCurrentPosition() + armRotateR.getCurrentPosition()) / 2;
+    }
+    public int getPositionL(){
+        return (armRotateL.getCurrentPosition());
+    }
+    public int getPositionR(){
+        return (armRotateR.getCurrentPosition());
     }
 
 }

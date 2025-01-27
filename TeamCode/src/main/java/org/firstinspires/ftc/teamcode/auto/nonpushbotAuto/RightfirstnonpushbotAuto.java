@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.hardware.Drive;
 import org.firstinspires.ftc.teamcode.hardware.Rotate;
@@ -18,15 +19,15 @@ public class RightfirstnonpushbotAuto extends LinearOpMode {
     Slides slides;
     Rotate rotate;
     StartServo startServo;
+    ElapsedTime timer = new ElapsedTime();
     public static double ticks_per_degree = 10.7;
     public static int strafe_1 = 20;
     public static int strafe_2 = 10;
     public static int rotate_1 = 90;
     public static int drive_1 = -60;
-    public static int rotate_2 = 90;
+    public static int rotate_2 = 80;
     public static int drive_2 = 40;
     public static int drive_3 = 110;
-    public static int rotate_3 = 90;
     @Override
     public void runOpMode() {
         CRServo rServo = hardwareMap.get(CRServo.class, "rServo");
@@ -40,8 +41,8 @@ public class RightfirstnonpushbotAuto extends LinearOpMode {
         startServo = new StartServo(this);
         startServo.start();
         waitForStart();
-        rotate.armRotateL.setPower(0.5);
-        rotate.armRotateR.setPower(0.5);
+        rotate.armRotateL.setPower(0.7);
+        rotate.armRotateR.setPower(0.7);
         sleep(300);
         rotate.armRotateL.setPower(0);
         rotate.armRotateR.setPower(0);
@@ -53,17 +54,21 @@ public class RightfirstnonpushbotAuto extends LinearOpMode {
         while(opModeIsActive() && slides.getPosition() < slides.closeIntakePos) {
             slides.setState("CLOSE INTAKE", rotate);
         }
+        timer.reset();
+        while(opModeIsActive() && timer.milliseconds() < 500){
+            drive.outtake();
+        }
+        drive.intakeStop();
 
-        while(opModeIsActive() && slides.getPosition() >= slides.slidesRetractedPos + 20) {
-            lServo.setPower(1);
-            rServo.setPower(1);
+
+        while(opModeIsActive() && slides.getPosition() >= slides.slidesRetractedPos + 40) {
             slides.setState("SLIDES RETRACTED", rotate);
         }
+
 
         drive.drive(0.5, drive_2);
         drive.rotate(0.5, rotate_2);
         drive.drive(0.5, drive_3);
-        drive.rotate(0.5, rotate_3);
 
 
 

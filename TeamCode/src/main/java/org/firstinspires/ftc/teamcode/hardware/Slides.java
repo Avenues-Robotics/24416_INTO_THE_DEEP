@@ -82,7 +82,7 @@ public class Slides {
         if(state.equals("MANUAL")){
             double stick = opMode.gamepad2.left_stick_x;
             if(Math.abs(stick) > 0.1){
-                if(rotate.getPosition() < -200 && getPosition() <= maxHorizontalPos){ // INTAKING
+                if(rotate.getPosition() < -120 && getPosition() <= maxHorizontalPos){ // INTAKING
                     Kstick = 0.4;
                     finalPowerL = stick * Kstick;
                     finalPowerR = stick * Kstick;
@@ -102,7 +102,7 @@ public class Slides {
         }
         else if(state.equals("HOLD")){
             finalPowerR = rightSlidePIDF.update(targetPosition, currentValueR);
-            finalPowerL = leftSlidePIDF.update(targetPosition, currentValueL);
+            finalPowerL = leftSlidePIDF.update(targetPosition, currentValueR);
         }
 
         armSlideR.setPower(finalPowerR);
@@ -110,7 +110,7 @@ public class Slides {
     }
 
     public int getPosition(){
-        return (armSlideL.getCurrentPosition() + armSlideR.getCurrentPosition()) / 2;
+        return (armSlideR.getCurrentPosition() + armSlideR.getCurrentPosition()) / 2;
     }
 
     public void setTargetPosition(int position){

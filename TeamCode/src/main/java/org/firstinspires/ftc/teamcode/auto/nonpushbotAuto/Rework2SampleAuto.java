@@ -18,8 +18,8 @@ import org.firstinspires.ftc.teamcode.hardware.Slides;
 import org.firstinspires.ftc.teamcode.hardware.StartServo;
 
 @Config
-@Autonomous(name="Left 2 Sample 1234")
-public class ReworkofLeftAutononPushbot extends LinearOpMode {
+@Autonomous(name="Left  1 Sample 1234")
+public class Rework2SampleAuto extends LinearOpMode {
     Drive drive;
     Slides slides;
     Rotate rotate;
@@ -95,72 +95,6 @@ public class ReworkofLeftAutononPushbot extends LinearOpMode {
         drive.rotate(0.6, rotate_2);
         drive.strafe_left(0.6, strafe_1);
         drive.drive(0.6, Drive_3);
-        while (opModeIsActive() && rotate.getPosition() >= rotate.intakepos + 25) {
-            slides.setState("SLIDES RETRACTED", rotate);
-            rotate.setState("INTAKE");
-            sleep(10);
-            dashboardTelemetry.addData("rotate", rotate.getPosition());
-            dashboardTelemetry.update();
         }
-//        while(opModeIsActive() && timer.milliseconds() < time_ms){
-//            rotate.setState("INTAKE");
-//            dashboardTelemetry.addData("timer", timer);
-//            dashboardTelemetry.update();
-//        }
-        drive.intake();
-        while (opModeIsActive() && slides.getPosition() >= slides.closeIntakePos){
-            slides.setState("CLOSE INTAKE", rotate);
-        }
-        timer.reset();
-        while(opModeIsActive() && timer.milliseconds() < time_ms){
-            slides.setState("CLOSE INTAKE", rotate);
-            dashboardTelemetry.addData("timer", timer);
-            dashboardTelemetry.update();
-        }
-        drive.drive(0.3, drive_4);
-        drive.intakeStop();
-        while (opModeIsActive() && slides.getPosition() >= slides.slidesRetractedPos+25){
-            slides.setState("SLIDES RETRACTED", rotate);
-        }
-        timer.reset();
-        while(opModeIsActive() && timer.milliseconds() < time_ms){
-            slides.setState("SLIDES RETRACTED", rotate);
-            dashboardTelemetry.addData("timer", timer);
-            dashboardTelemetry.update();
-        }
-        while (opModeIsActive() && rotate.getPosition() >= rotate.outtakepos) {
-            rotate.setState("OUTTAKE");
-            slides.setState("SLIDES RETRACTED", rotate);
+    }
 
-        }
-//        timer.reset();
-//        while(opModeIsActive() && timer.milliseconds() < time_ms){
-//            rotate.setState("OUTTAKE");
-//            slides.setState("SLIDES RETRACTED", rotate);
-//            dashboardTelemetry.addData("timer", timer);
-//            dashboardTelemetry.update();
-//        }
-        drive.strafe_left(0.6, strafe_2);
-        drive.rotate(0.6, rotate_3);
-        while (opModeIsActive() && slides.getPosition() <= slides.highOuttakePos){
-            slides.setState("HIGH OUTTAKE", rotate);
-        }
-        timer.reset();
-        while(opModeIsActive() && timer.milliseconds() < time_ms){
-            drive.outtake();
-            slides.setState("HIGH OUTTAKE", rotate);
-            dashboardTelemetry.addData("timer", timer);
-            dashboardTelemetry.update();
-        }
-        drive.intakeStop();
-        while (opModeIsActive() && slides.getPosition() >= slides.slidesRetractedPos+25){
-            slides.setState("SLIDES RETRACTED", rotate);
-        }
-        timer.reset();
-        while(opModeIsActive() && timer.milliseconds() < time_ms){
-            slides.setState("SLIDES RETRACTED", rotate);
-            dashboardTelemetry.addData("timer", timer);
-            dashboardTelemetry.update();
-        }
-       }
-      }
