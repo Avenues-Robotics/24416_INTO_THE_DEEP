@@ -79,7 +79,7 @@ public class Slides {
             finalPowerR = 0;
             finalPowerL = 0;
         }
-        if(state.equals("MANUAL")){
+        else if(state.equals("MANUAL")){
             double stick = opMode.gamepad2.left_stick_x;
             if(Math.abs(stick) > 0.1){
                 if(rotate.getPosition() < -120 && getPosition() <= maxHorizontalPos){ // INTAKING
