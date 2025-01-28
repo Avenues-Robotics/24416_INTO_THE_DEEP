@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.hardware;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotor.RunMode;
 
 import org.firstinspires.ftc.teamcode.utilities.PIDF;
 
@@ -41,10 +42,10 @@ public class Rotate {
         armRotateL = opMode.hardwareMap.get(DcMotor.class, "ArmRotateL");
         armRotateR.setDirection(DcMotor.Direction.REVERSE);
         armRotateL.setDirection(DcMotor.Direction.FORWARD);
-        armRotateR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        armRotateL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        armRotateR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        armRotateL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        armRotateR.setMode(RunMode.STOP_AND_RESET_ENCODER);
+        armRotateL.setMode(RunMode.STOP_AND_RESET_ENCODER);
+        armRotateR.setMode(RunMode.RUN_WITHOUT_ENCODER);
+        armRotateL.setMode(RunMode.RUN_WITHOUT_ENCODER);
 
         intakePIDF = new PIDF(intake_Kp, intake_Ki, intake_Kd, intake_Kf, tolerance);
         outakePIDF = new PIDF(outtake_Kp, outtake_Ki, outtake_Kd, outtake_Kf, tolerance);
@@ -86,6 +87,12 @@ public class Rotate {
 
         armRotateR.setPower(power);
         armRotateL.setPower(power);
+    }
+    public void resetRotation(){
+        armRotateL.setMode(RunMode.STOP_AND_RESET_ENCODER);
+        armRotateR.setMode(RunMode.STOP_AND_RESET_ENCODER);
+        armRotateL.setMode(RunMode.RUN_WITHOUT_ENCODER);
+        armRotateR.setMode(RunMode.RUN_WITHOUT_ENCODER);
     }
 
     public int getPosition(){

@@ -112,6 +112,12 @@ public class Slides {
     public int getPosition(){
         return (armSlideR.getCurrentPosition() + armSlideR.getCurrentPosition()) / 2;
     }
+    public void resetSLides(){
+        armSlideL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        armSlideR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        armSlideR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        armSlideL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    }
 
     public void setTargetPosition(int position){
         targetPosition = position;

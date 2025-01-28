@@ -20,7 +20,7 @@ public class Drive {
 
     public static double TICKS_PER_CM = 17.5;
     public static double TICKS_PER_DEGREE = 10.72;
-    int tolerance = 11;
+    int tolerance = 20;
 
     public Drive(LinearOpMode opModeCalledFrom) {
         opMode = opModeCalledFrom;
