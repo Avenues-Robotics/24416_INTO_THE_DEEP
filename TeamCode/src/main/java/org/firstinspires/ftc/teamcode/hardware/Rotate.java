@@ -52,7 +52,7 @@ public class Rotate {
 
     public void setState(String state){
 
-        int currentValue = (armRotateR.getCurrentPosition() + armRotateL.getCurrentPosition()) / 2;
+        int currentValue = getPosition();
 
         if (state.equals("INTAKE")) {
             targetPosition = intakepos;
@@ -98,4 +98,7 @@ public class Rotate {
         return (armRotateR.getCurrentPosition());
     }
 
+    public double getPower(){
+        return power;
+    }
 }
