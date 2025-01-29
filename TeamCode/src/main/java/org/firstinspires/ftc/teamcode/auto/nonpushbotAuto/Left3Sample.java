@@ -5,21 +5,17 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcontroller.external.samples.SensorREV2mDistance;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.hardware.Drive;
 import org.firstinspires.ftc.teamcode.hardware.Rotate;
 import org.firstinspires.ftc.teamcode.hardware.Slides;
 import org.firstinspires.ftc.teamcode.hardware.StartServo;
 
 @Config
-@Autonomous(name="Left 3 Sample 1234")
-public class ReworkofLeftAutononPushbot extends LinearOpMode {
+@Autonomous(name="Left 3 Sample")
+public class Left3Sample extends LinearOpMode {
     Drive drive;
     Slides slides;
     Rotate rotate;
@@ -28,32 +24,40 @@ public class ReworkofLeftAutononPushbot extends LinearOpMode {
     FtcDashboard dashboard = FtcDashboard.getInstance();
     Telemetry dashboardTelemetry = dashboard.getTelemetry();
     ElapsedTime timer = new ElapsedTime();
+    ElapsedTime timer_full = new ElapsedTime();
 
     double distance;
 
-    public static double ticks_per_degree = 10.8;
-    int strafe_1 = -10;
+    double ticks_per_degree = 10.8;
+    public static int strafe_06 = -8;
     int rotate_1 = -45;
-    int drive_1 = 54;
-    int rotate_2 = 45;
-    int rotate_3 = -45;
-    int drive_2 = -15;
-    public static int strafe_2 = 20;
+    int drive_02 = 54;
+    int rotate_05 = 45;
+    int rotate_03 = -45;
+    int drive_04 = -15;
+    public static int strafe_09 = 20;
 
     int Drive_3 = -10;
-    int drive_4 = 25;
-    public static int drive_5 = -10;
-    public static int strafe_3 = -40;
-    public static int drive_9 = 10;
-    int rotate_4 = 45;
-    public static int drive_6 = -10;
-    public static int drive_7 = 22;
-    public static int adjust_2 = -5;
-    int rotate_5 = -45;
-    public static int drive_8 = -17;
+    public static int drive_08 = 25;
+    public static int drive_11 = -13;
+    public static int strafe_13 = -40;
+    public static int drive_20 = 10;
+    int rotate_12 = 45;
+    public static int drive_14 = -10;
+    public static int drive_16 = 22;
+    public static int adjust_15 = -5;
+
+    public static int rotate_10 = -45;
+    int rotate_18 = -45;
+    public static int drive_17 = -17;
+    public static int strafe_19 = -3;
     public static int adjust = -5;
-    int drive_start = 5;
-    int time_ms = 1200;
+    int drive_01 = 5;
+    public static int outtake_ms = 400;
+
+    public static int outtake_adjust= 15;
+
+    public static int drive_07 = -10;
 
 
 
@@ -61,6 +65,7 @@ public class ReworkofLeftAutononPushbot extends LinearOpMode {
     public void runOpMode() {
 
         // INITIALIZE
+        timer_full.reset();
         CRServo rServo = hardwareMap.get(CRServo.class, "rServo");
         CRServo lServo = hardwareMap.get(CRServo.class, "lServo");
         lServo.setDirection(CRServo.Direction.FORWARD);
@@ -82,7 +87,12 @@ public class ReworkofLeftAutononPushbot extends LinearOpMode {
         dashboardTelemetry.update();
 
         // 1. DRIVE FORWARD
-        drive.drive(0.3, drive_start);
+        // Turn on the intake servos for a bit to make sure
+        // that they work on the first outtake.  This makes not sense
+        // but it fixed the problem.
+        drive.intake();
+        drive.drive(0.3, drive_01);
+        drive.intakeStop();
 
         // 2. ROTATE ARM TO 0 POSITION
         rotate.armRotateL.setPower(0.7);
@@ -99,28 +109,21 @@ public class ReworkofLeftAutononPushbot extends LinearOpMode {
         // RESET MOTOR MODES
         rotate.resetRotation();
 
-        // DEBUG: CHECK ROTATION POSITONS
-        dashboardTelemetry.addLine("Should be 0");
-        dashboardTelemetry.addData("rotate", rotate.getPosition());
-        dashboardTelemetry.addData("rotate L", rotate.getPositionL());
-        dashboardTelemetry.addData("rotate R", rotate.getPositionR());
-        dashboardTelemetry.update();
-
         startServo.open();
-        sleep(500);
 
         // 3. DRIVE TO LINE UP SAMPLE 1 DELIVERY
-        drive.drive(0.8, drive_1);
-        drive.rotate(0.5, rotate_1);
-        drive.drive(0.8, drive_2);
+        drive.drive(0.8, drive_02);
+        drive.rotate(0.5, rotate_03);
+        drive.drive(0.8, drive_04);
 
         // 4. DELIVER SAMPLE 1
-        while (opModeIsActive() && slides.getPosition() <= slides.highOuttakePos){
+        slides.resetSLides();
+        while (opModeIsActive() && slides.getPosition() <= slides.highOuttakePos - outtake_adjust){
             slides.setState("HIGH OUTTAKE", rotate);
         }
+        drive.outtake();
         timer.reset();
-        while(opModeIsActive() && timer.milliseconds() < time_ms){
-            drive.outtake();
+        while(opModeIsActive() && timer.milliseconds() < outtake_ms){
             slides.setState("HIGH OUTTAKE", rotate);
             dashboardTelemetry.addData("timer", timer);
             dashboardTelemetry.update();
@@ -129,7 +132,7 @@ public class ReworkofLeftAutononPushbot extends LinearOpMode {
         while (opModeIsActive() && slides.getPosition() >= slides.slidesRetractedPos+25){
             slides.setState("SLIDES RETRACTED", rotate);
         }
-        slides.resetSLides();
+
 
 //        // Not sure what this does
 //        timer.reset();
@@ -140,17 +143,12 @@ public class ReworkofLeftAutononPushbot extends LinearOpMode {
 //        }
 
         // 5. DRIVE TO SAMPLE 2 INTAKE
-        drive.rotate(0.8, rotate_2);
-        drive.strafe_left(0.8, strafe_1);
-        drive.drive(0.8, Drive_3);
+        drive.rotate(0.8, rotate_05);
+        drive.strafe_left(0.8, strafe_06);
+        drive.drive(0.8, drive_07);
 
         // 6. ROTATE SLIDES TO INTAKE POSITION
-
-        //  ** PROBLEM **
-        // For some reason rotateL and rotateR are returning about -113 not -235
-        timer.reset();
-
-        // RESET MOTOR MODES
+        slides.resetSLides();
         rotate.resetRotation();
 
         while (opModeIsActive() && rotate.getPosition() >= rotate.intakepos + 25) {
@@ -164,17 +162,8 @@ public class ReworkofLeftAutononPushbot extends LinearOpMode {
             dashboardTelemetry.addData("timer", timer.seconds());
             dashboardTelemetry.update();
         }
-        slides.resetSLides();
-
-        // Not sure what this does
-//        while(opModeIsActive() && timer.milliseconds() < time_ms){
-//            rotate.setState("INTAKE");
-//            dashboardTelemetry.addData("timer", timer);
-//            dashboardTelemetry.update();
-//        }
 
         // 7. INTAKE SAMPLE 2
-        drive.drive(0.6, adjust);
         drive.intake();
         while (opModeIsActive() && slides.getPosition() <= slides.closeIntakePos){
             slides.setState("CLOSE INTAKE", rotate);
@@ -182,41 +171,32 @@ public class ReworkofLeftAutononPushbot extends LinearOpMode {
         slides.armSlideR.setPower(0);
         slides.armSlideL.setPower(0);
 
-//        // Not sure what this does
-//        timer.reset();
-//        while(opModeIsActive() && timer.milliseconds() < time_ms){
-//            slides.setState("CLOSE INTAKE", rotate);
-//            dashboardTelemetry.addData("timer", timer);
-//            dashboardTelemetry.update();
-//        }
-
         // SUGGESTION: Change this to slowly extend slides.
-        drive.drive(0.15, drive_4);
+        drive.drive(0.15, drive_08);
         drive.intakeStop();
         while (opModeIsActive() && slides.getPosition() >= slides.slidesRetractedPos+25){
             slides.setState("SLIDES RETRACTED", rotate);
         }
-        slides.resetSLides();
 
         // 8. ROTATE SLIDES TO OUTTAKE POSITION
         while (opModeIsActive() && rotate.getPosition() <= rotate.outtakepos - 25) {
             rotate.setState("OUTTAKE");
             slides.setState("SLIDES RETRACTED", rotate);
-
         }
+        slides.resetSLides();
 //
 
         // 9. DRIVE TO DELIVER SAMPLE 2
-        drive.strafe_left(0.8, strafe_2);
-        drive.rotate(0.8, rotate_3);
-        drive.drive(0.8, drive_5);
+        drive.strafe_left(0.8, strafe_09);
+        drive.rotate(0.8, rotate_10);
+        drive.drive(0.8, drive_11);
 
         // 10. DELIVER SAMPLE 2
-        while (opModeIsActive() && slides.getPosition() <= slides.highOuttakePos){
+        while (opModeIsActive() && slides.getPosition() <= slides.highOuttakePos-outtake_adjust){
             slides.setState("HIGH OUTTAKE", rotate);
         }
         timer.reset();
-        while(opModeIsActive() && timer.milliseconds() < time_ms){
+        while(opModeIsActive() && timer.milliseconds() < outtake_ms){
             drive.outtake();
             slides.setState("HIGH OUTTAKE", rotate);
             dashboardTelemetry.addData("timer", timer);
@@ -228,47 +208,48 @@ public class ReworkofLeftAutononPushbot extends LinearOpMode {
         }
         slides.resetSLides();
 
-        // NOT NEEDED
-        timer.reset();
-        while(opModeIsActive() && timer.milliseconds() < time_ms){
-            slides.setState("SLIDES RETRACTED", rotate);
-            dashboardTelemetry.addData("timer", timer);
-            dashboardTelemetry.update();
-        }
-        drive.rotate(0.8, rotate_4);
-        drive.strafe_left(0.8, strafe_3);
-        drive.drive(0.8, drive_6);
+        // 11. DRIVE TO SAMPLE 3
+        drive.rotate(0.8, rotate_12);
+        drive.strafe_left(0.8, strafe_13);
+        drive.drive(0.8, drive_14);
+
+        // 12. INTAKE SAMPLE 3
         rotate.resetRotation();
         while (opModeIsActive() && rotate.getPosition() >= rotate.intakepos + 25) {
             slides.setState("SLIDES RETRACTED", rotate);
             rotate.setState("INTAKE");
         }
         slides.resetSLides();
-        drive.drive(0.8,adjust_2);
+        drive.drive(0.8,adjust_15);
         drive.intake();
         while (opModeIsActive() && slides.getPosition() <= slides.closeIntakePos){
             slides.setState("CLOSE INTAKE", rotate);
         }
-
         slides.armSlideR.setPower(0);
         slides.armSlideL.setPower(0);
 
-        drive.drive(0.1, drive_7);
+        drive.drive(0.1, drive_16);
         drive.intakeStop();
+
+        // 13. ROTATE SLIDES TO OUTTAKE
         while (opModeIsActive() && rotate.getPosition() <= rotate.outtakepos - 25) {
             rotate.setState("OUTTAKE");
             slides.setState("SLIDES RETRACTED", rotate);
-
         }
-        drive.drive(0.8, drive_8);
-        drive.strafe_left(0.8, -strafe_3);
-        drive.rotate(0.8,rotate_5);
-        drive.drive(0.8, drive_9);
-        while (opModeIsActive() && slides.getPosition() <= slides.highOuttakePos){
+
+        // 14. DRIVE TO OUTTAKE
+        drive.drive(0.8, drive_17);
+        drive.strafe_left(0.8, -strafe_13);
+        drive.rotate(0.8, rotate_18);
+        drive.strafe_left(0.8, strafe_19);
+        drive.drive(0.8, drive_20);
+
+        // 15. OUTTAKE SAMPLE
+        while (opModeIsActive() && slides.getPosition() <= slides.highOuttakePos-outtake_adjust){
             slides.setState("HIGH OUTTAKE", rotate);
         }
         timer.reset();
-        while(opModeIsActive() && timer.milliseconds() < time_ms){
+        while(opModeIsActive() && timer.milliseconds() < outtake_ms){
             drive.outtake();
             slides.setState("HIGH OUTTAKE", rotate);
             dashboardTelemetry.addData("timer", timer);
@@ -280,6 +261,6 @@ public class ReworkofLeftAutononPushbot extends LinearOpMode {
         }
         slides.resetSLides();
 
-
+        dashboardTelemetry.addData("timer_full", timer_full.seconds());
     }
 }
