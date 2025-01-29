@@ -44,6 +44,11 @@ public class Drive {
         FR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         BR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
+        FL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        BL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        FR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        BR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
         // Move intake and outtake code to its own class
         lServo.setDirection(CRServo.Direction.FORWARD);
         rServo.setDirection(CRServo.Direction.REVERSE);
