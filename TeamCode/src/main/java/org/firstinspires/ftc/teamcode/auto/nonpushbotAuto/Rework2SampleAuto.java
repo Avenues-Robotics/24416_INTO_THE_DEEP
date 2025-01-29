@@ -18,7 +18,7 @@ import org.firstinspires.ftc.teamcode.hardware.Slides;
 import org.firstinspires.ftc.teamcode.hardware.StartServo;
 
 @Config
-@Autonomous(name="Left  1 Sample 1234")
+@Autonomous(name="Left 1 Sample 1234")
 public class Rework2SampleAuto extends LinearOpMode {
     Drive drive;
     Slides slides;

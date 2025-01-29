@@ -99,7 +99,7 @@ public class LeftfirstnonpushbotAuto extends LinearOpMode {
 //            telemetry.addData("distance", distance);
 //            telemetry.update();
 
-        drive.rotate(0.6, rotate_3);     startServo.open();
+        drive.rotate(0.6, rotate_3);   startServo.open();
         drive.strafe_left(0.6, strafe_1);
         drive.rotate(0.6, rotate_1);
         drive.strafe_left(0.6, strafe_2);
