@@ -34,13 +34,13 @@ public class Left3Sample extends LinearOpMode {
     int rotate_03 = -45;
     int drive_04 = -15;
     int rotate_05 = 45;
-    public static int strafe_06 = -8;
+    public static int strafe_06 = -11;
     public static int drive_07 = -10;
 
     public static int drive_08 = 25;
     public static int strafe_09 = 20;
     public static int rotate_10 = -45;
-    public static int drive_11 = -13;
+    public static int drive_11 = -15;
     int rotate_12 = 45;
     public static int strafe_13 = -40;
     public static int drive_14 = -10;
@@ -49,7 +49,7 @@ public class Left3Sample extends LinearOpMode {
     public static int drive_17 = -17;
     int rotate_18 = -45;
     public static int strafe_19 = -3;
-    public static int drive_20 = 10;
+    public static int drive_20 = 9;
     public static int adjust = -5;
 
     public static int outtake_ms = 400;
