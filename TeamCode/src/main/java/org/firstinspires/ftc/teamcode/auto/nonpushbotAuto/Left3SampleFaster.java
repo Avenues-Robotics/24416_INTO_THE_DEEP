@@ -40,7 +40,7 @@ public class Left3SampleFaster extends LinearOpMode {
     public static int drive_08 = 25;
     public static int drive_09 = -15;
     public static int rotate_10 = -65;
-//    public static int rotate_10 = -45;
+    //    public static int rotate_10 = -45;
     public static int drive_11 = 0;
     public static int rotate_12 = 85;
     public static int strafe_13 = -40;
