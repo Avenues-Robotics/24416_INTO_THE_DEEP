@@ -29,6 +29,7 @@
 
 package org.firstinspires.ftc.teamcode.teleop;
 
+import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -38,8 +39,10 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.hardware.ListAverage;
 import org.firstinspires.ftc.teamcode.hardware.Rotate;
 import org.firstinspires.ftc.teamcode.hardware.Slides;
+import org.firstinspires.ftc.teamcode.utilities.PIDF;
 
 /*
  * This file contains an example of a Linear "OpMode".
@@ -85,7 +88,13 @@ public class Teleop extends LinearOpMode {
     String slidesState;
     String rotateState;
     Rotate rotate;
-
+    public PIDF leftDistancePIDF;
+    public PIDF rightDistancePIDF;
+    double Kp = 0.003;
+    double Ki = 0;
+    double Kd = 0;
+    double Kf = 0.05;
+    double tolerance = 1;
     @Override
     public void runOpMode() {
 
@@ -99,8 +108,8 @@ public class Teleop extends LinearOpMode {
         DcMotor BR = hardwareMap.get(DcMotor.class, "BR");
         CRServo rServo = hardwareMap.get(CRServo.class, "rServo");
         CRServo lServo = hardwareMap.get(CRServo.class, "lServo");
-        sensorDistance1 = hardwareMap.get(DistanceSensor.class, "Distance1");
-        sensorDistance2 = hardwareMap.get(DistanceSensor.class, "Distance 2")
+        sensorDistance1 = hardwareMap.get(Rev2mDistanceSensor.class, "Distance 1");
+        sensorDistance2 = hardwareMap.get(Rev2mDistanceSensor.class, "Distance 2")
 ;
         // ########################################################################################
         // !!!            IMPORTANT Drive Information. Test your motor directions.            !!!!!
@@ -165,6 +174,7 @@ public class Teleop extends LinearOpMode {
             double axial = -gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
             double lateral = gamepad1.left_stick_x;
             double yaw = gamepad1.right_stick_x;
+            int targetPosition = 7;
 
             // Combine the joystick requests for each axis-motion to determine each wheel's power.
             // Set up a variable for each drive wheel to save the power level for telemetry.
@@ -274,8 +284,36 @@ public class Teleop extends LinearOpMode {
                 rServo.setPower(0);
             }
             // ALIGNMENT FOR SPECIMEN
-            if (currentGamepad1.y && !prevGamepad1.y){;
-                while(sensorDistance1.getDistance(DistanceUnit.CM)<7);
+            if (currentGamepad1.y){
+                ListAverage rightAverage = new ListAverage(10);
+                ListAverage leftAverage = new ListAverage(10);
+                rightDistancePIDF = new PIDF(Kp, Ki, Kd, Kf, tolerance);
+                leftDistancePIDF = new PIDF(Kp, Ki, Kd, Kf, tolerance);
+                double rightCurrentValue = rightAverage.listAverage(sensorDistance1.getDistance(DistanceUnit.CM));
+                double leftCurrentValue = leftAverage.listAverage(sensorDistance2.getDistance(DistanceUnit.CM));
+                double rightPower = -rightDistancePIDF.update(targetPosition, rightCurrentValue);
+                double leftPower = -leftDistancePIDF.update(targetPosition, leftCurrentValue);
+                while(opModeIsActive() && sensorDistance1.getDistance(DistanceUnit.CM)>targetPosition && sensorDistance2.getDistance(DistanceUnit.CM)>targetPosition){
+                    rightCurrentValue = rightAverage.listAverage(sensorDistance1.getDistance(DistanceUnit.CM));
+                    leftCurrentValue = leftAverage.listAverage(sensorDistance2.getDistance(DistanceUnit.CM));
+                    rightPower = -rightDistancePIDF.update(targetPosition, rightCurrentValue);
+                    leftPower = -leftDistancePIDF.update(targetPosition, leftCurrentValue);
+                    BR.setPower(rightPower);//IGNORE
+                    FR.setPower(rightPower);//IGNORE
+                    BL.setPower(leftPower);//IGNORE
+                    FL.setPower(leftPower);//PLEASE IGNORE, THIS IS A CHEAP FIX FOR ME INPUTING THE WRONG DISTANCE SENSORS FOR LEFT AND RIGHT
+                    telemetry.addData("rightCurrentValue",rightCurrentValue);
+                    telemetry.addData("leftCurrentValue", leftCurrentValue);
+                    telemetry.addData("rightPower",rightPower);
+                    telemetry.addData("leftPower", leftPower);
+                    telemetry.addData("SizeR", rightAverage.getSize());
+                    telemetry.addData("SizeL", leftAverage.getSize());
+                    telemetry.update();
+                    sleep(10);
+
+                }
+
+
 
             }
 
