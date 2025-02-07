@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.auto.nonpushbotAuto;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -13,8 +12,8 @@ import org.firstinspires.ftc.teamcode.hardware.Slides;
 import org.firstinspires.ftc.teamcode.hardware.StartServo;
 
 @Config
-@Autonomous(name="Right Auto 1234")
-public class RightfirstnonpushbotAuto extends LinearOpMode {
+@Autonomous(name="Right 1 Specimen")
+public class Right1Specimen extends LinearOpMode {
     Drive drive;
     Slides slides;
     Rotate rotate;
