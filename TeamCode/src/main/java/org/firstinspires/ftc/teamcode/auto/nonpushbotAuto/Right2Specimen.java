@@ -25,8 +25,9 @@ public class Right2Specimen extends LinearOpMode {
     public static int rotate_1 = 90;
     public static int drive_1 = -60;
     public static int rotate_2 = 80;
-    public static int drive_2 = 50;
+    public static int drive_2 = 65;
     public static int drive_3 = 110;
+    public static int drive_4 = 20;
     @Override
     public void runOpMode() {
         CRServo rServo = hardwareMap.get(CRServo.class, "rServo");
@@ -40,9 +41,12 @@ public class Right2Specimen extends LinearOpMode {
         startServo = new StartServo(this);
         startServo.start();
         waitForStart();
-        rotate.armRotateL.setPower(0.7);
-        rotate.armRotateR.setPower(0.7);
-        sleep(300);
+        rotate.armRotateL.setPower(0.55);
+        rotate.armRotateR.setPower(0.55);
+        sleep(500);
+        rotate.armRotateL.setPower(-1);
+        rotate.armRotateR.setPower(-1);
+        sleep(40);
         rotate.armRotateL.setPower(0);
         rotate.armRotateR.setPower(0);
         startServo.open();
@@ -54,7 +58,7 @@ public class Right2Specimen extends LinearOpMode {
             slides.setState("CLOSE INTAKE", rotate);
         }
         timer.reset();
-        while(opModeIsActive() && timer.milliseconds() < 500){
+        while(opModeIsActive() && timer.milliseconds() < 1000){
             drive.outtake();
         }
         drive.intakeStop();
@@ -68,11 +72,36 @@ public class Right2Specimen extends LinearOpMode {
         drive.drive(0.5, drive_2);
         drive.rotate(0.5, rotate_2);
         drive.drive(0.5, drive_3);
-        while (opModeIsActive() && rotate.getPosition() >= rotate.intakepos + 25) {
+        while (opModeIsActive() && rotate.getPosition() >= rotate.intakepos + 40) {
+            rotate.setState("INTAKE");
+            slides.setState("SLIDES RETRACTED", rotate);
+        }
+        slides.resetSLides();
+        while (opModeIsActive() && slides.getPosition() <= slides.closeIntakePos){
+            slides.setState("CLOSE INTAKE", rotate);
+            drive.intake();
+        }
+        slides.armSlideR.setPower(0);
+        slides.armSlideL.setPower(0);
+        drive.drive(0.1, drive_4);
+        drive.intakeStop();
+        drive.drive(0.75, -drive_3);
+        drive.rotate(0.75, -90);
+        while (opModeIsActive() && rotate.getPosition() >= rotate.outtakepos + 25) {
             slides.setState("SLIDES RETRACTED", rotate);
             rotate.setState("INTAKE");
         }
         slides.resetSLides();
+        drive.drive(0.75, -drive_2);
+        while (opModeIsActive() && slides.getPosition() <= slides.closeIntakePos){
+            slides.setState("CLOSE INTAKE", rotate);
+            drive.intake();
+        }
+        while(opModeIsActive() && timer.milliseconds() < 1000){
+            drive.outtake();
+        }
+        drive.intakeStop();
+
 
 
 

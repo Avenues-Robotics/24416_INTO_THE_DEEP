@@ -40,9 +40,12 @@ public class Right1Specimen extends LinearOpMode {
         startServo = new StartServo(this);
         startServo.start();
         waitForStart();
-        rotate.armRotateL.setPower(0.7);
-        rotate.armRotateR.setPower(0.7);
-        sleep(300);
+        rotate.armRotateL.setPower(0.55);
+        rotate.armRotateR.setPower(0.55);
+        sleep(500);
+        rotate.armRotateL.setPower(-1);
+        rotate.armRotateR.setPower(-1);
+        sleep(40);
         rotate.armRotateL.setPower(0);
         rotate.armRotateR.setPower(0);
         startServo.open();
