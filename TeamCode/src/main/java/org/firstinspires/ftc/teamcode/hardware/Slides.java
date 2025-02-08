@@ -28,8 +28,10 @@ public class Slides {
     private static double toleranceR = 10;
     public static double Kstick;
 
+
     public static int closeIntakePos = 850; // CHECKED
     public static int CloseIntakeAutoPos = 1200;
+    public static int SpecimenOuttakePos = 650;
     public static int lowOuttakePos = 1200; // CHECKED
     public static int highOuttakePos = 2750; // CHECKED
     public static int slidesRetractedPos = 0;
@@ -60,11 +62,15 @@ public class Slides {
         else if(state.equals("CLOSE AUTO INTAKE")){
             targetPosition = CloseIntakeAutoPos;
         }
+
         else if(state.equals("LOW OUTTAKE")){
             targetPosition = lowOuttakePos;
         }
         else if(state.equals("HIGH OUTTAKE")) {
             targetPosition = highOuttakePos;
+        }
+        else if(state.equals("SPECIMEN OUTTAKE")) {
+            targetPosition = SpecimenOuttakePos;
         }
 
 
