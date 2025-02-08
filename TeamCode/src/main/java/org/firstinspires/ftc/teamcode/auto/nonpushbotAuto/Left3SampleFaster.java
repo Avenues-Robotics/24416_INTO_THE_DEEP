@@ -27,33 +27,34 @@ public class Left3SampleFaster extends LinearOpMode {
     ElapsedTime timer_full = new ElapsedTime();
 
     double distance;
-
-    double ticks_per_degree = 10.8;
-    int drive_01 = 5;
-    int drive_02 = 54;
-    int rotate_03 = -45;
-    int drive_04 = -15;
-    public static int rotate_05 = 70;
+    public static int drive_01 = 5;
+    public static int drive_02 = 54;
+    public static int rotate_03 = -45;
+    public static int drive_04 = -17;
+    public static int rotate_05 = 64;
     public static int strafe_06 = 0;
     public static int drive_07 = -10;
 
     public static int drive_08 = 25;
     public static int drive_09 = -15;
-    public static int rotate_10 = -70;
-//    public static int rotate_10 = -45;
+    public static int rotate_10 = -65;
+    //    public static int rotate_10 = -45;
     public static int drive_11 = 0;
-    int rotate_12 = 45;
+    public static int rotate_12 = 85;
     public static int strafe_13 = -40;
     public static int drive_14 = -10;
     public static int adjust_15 = -5;
-    public static int drive_16 = 22;
+    public static int drive_16 = 25;
     public static int drive_17 = -17;
-    int rotate_18 = -45;
+    int rotate_18 = -55;
     public static int strafe_19 = -3;
-    public static int drive_20 = 9;
+    public static int drive_20 = -5;
     public static int adjust = -5;
-
+    public static int rotate_21 = -20;
+    public static int drive_22 = -2;
     public static int outtake_ms = 400;
+    public static int outtake_ms2 = 600;
+    public static int adjust_17 = -3;
 
     public static int outtake_adjust= 15;
 
@@ -71,7 +72,6 @@ public class Left3SampleFaster extends LinearOpMode {
         lServo.setDirection(CRServo.Direction.FORWARD);
         rServo.setDirection(CRServo.Direction.REVERSE);
         drive = new Drive(this);
-        Drive.TICKS_PER_DEGREE = ticks_per_degree;
         slides = new Slides(this);
         rotate = new Rotate(this);
         startServo = new StartServo(this);
@@ -97,7 +97,10 @@ public class Left3SampleFaster extends LinearOpMode {
         // 2. ROTATE ARM TO 0 POSITION
         rotate.armRotateL.setPower(0.55);
         rotate.armRotateR.setPower(0.55);
-        sleep(300);
+        sleep(500);
+        rotate.armRotateL.setPower(-1);
+        rotate.armRotateR.setPower(-1);
+        sleep(40);
         rotate.armRotateL.setPower(0);
         rotate.armRotateR.setPower(0);
 
@@ -112,9 +115,9 @@ public class Left3SampleFaster extends LinearOpMode {
         startServo.open();
 
         // 3. DRIVE TO LINE UP SAMPLE 1 DELIVERY
-        drive.drive(0.8, drive_02);
+        drive.drive(0.875, drive_02);
         drive.rotate(0.5, rotate_03);
-        drive.drive(0.8, drive_04);
+        drive.drive(0.875, drive_04);
 
         // 4. DELIVER SAMPLE 1
         slides.resetSLides();
@@ -143,9 +146,9 @@ public class Left3SampleFaster extends LinearOpMode {
 //        }
 
         // 5. DRIVE TO SAMPLE 2 INTAKE
-        drive.rotate(0.8, rotate_05);
-        drive.strafe_left(0.8, strafe_06);
-        drive.drive(0.8, drive_07);
+        drive.rotate(0.875, rotate_05);
+        drive.strafe_left(0.875, strafe_06);
+        drive.drive(0.875, drive_07);
 
         // 6. ROTATE SLIDES TO INTAKE POSITION
         slides.resetSLides();
@@ -187,16 +190,16 @@ public class Left3SampleFaster extends LinearOpMode {
 //
 
         // 9. DRIVE TO DELIVER SAMPLE 2
-        drive.drive(0.8,drive_09);
-        drive.rotate(0.8, rotate_10);
-        drive.drive(0.8, drive_11);
+        drive.drive(0.875,drive_09);
+        drive.rotate(0.875, rotate_10);
+        drive.drive(0.875, drive_11);
 
          //10. DELIVER SAMPLE 2
         while (opModeIsActive() && slides.getPosition() <= slides.highOuttakePos-outtake_adjust){
             slides.setState("HIGH OUTTAKE", rotate);
         }
         timer.reset();
-        while(opModeIsActive() && timer.milliseconds() < outtake_ms){
+        while(opModeIsActive() && timer.milliseconds() < outtake_ms2){
             drive.outtake();
             slides.setState("HIGH OUTTAKE", rotate);
             dashboardTelemetry.addData("timer", timer);
@@ -207,28 +210,10 @@ public class Left3SampleFaster extends LinearOpMode {
             slides.setState("SLIDES RETRACTED", rotate);
         }
         slides.resetSLides();
-        drive.rotate(0.8, rotate_10);
-
+        drive.rotate(0.875, rotate_12);
         // 10. DELIVER SAMPLE 2
-        while (opModeIsActive() && slides.getPosition() <= slides.highOuttakePos-outtake_adjust){
-            slides.setState("HIGH OUTTAKE", rotate);
-        }
-        timer.reset();
-        while(opModeIsActive() && timer.milliseconds() < outtake_ms){
-            drive.outtake();
-            slides.setState("HIGH OUTTAKE", rotate);
-            dashboardTelemetry.addData("timer", timer);
-            dashboardTelemetry.update();
-        }
-        drive.intakeStop();
-        while (opModeIsActive() && slides.getPosition() >= slides.slidesRetractedPos+30){
-            slides.setState("SLIDES RETRACTED", rotate);
-        }
-        slides.resetSLides();
 
         // 11. DRIVE TO SAMPLE 3
-        drive.rotate(0.8, rotate_12);
-
         // 12. INTAKE SAMPLE 3
         rotate.resetRotation();
         while (opModeIsActive() && rotate.getPosition() >= rotate.intakepos + 25) {
@@ -236,7 +221,7 @@ public class Left3SampleFaster extends LinearOpMode {
             rotate.setState("INTAKE");
         }
         slides.resetSLides();
-        drive.drive(0.8,adjust_15);
+        drive.drive(0.875,adjust_15);
         drive.intake();
         while (opModeIsActive() && slides.getPosition() <= slides.closeIntakePos){
             slides.setState("CLOSE INTAKE", rotate);
@@ -246,6 +231,7 @@ public class Left3SampleFaster extends LinearOpMode {
 
         drive.drive(0.1, drive_16);
         drive.intakeStop();
+        drive.drive(0.6, adjust_17);
 
         // 13. ROTATE SLIDES TO OUTTAKE
         while (opModeIsActive() && rotate.getPosition() <= rotate.outtakepos - 25) {
@@ -254,11 +240,12 @@ public class Left3SampleFaster extends LinearOpMode {
         }
 
         // 14. DRIVE TO OUTTAKE
-//        drive.drive(0.8, drive_17);
-//        drive.strafe_left(0.8, -strafe_13);
-        drive.rotate(0.8, rotate_18);
-//        drive.strafe_left(0.8, strafe_19);
- //       drive.drive(0.8, drive_20);
+//        drive.drive(0.875, drive_17);
+//        drive.strafe_left(0.875, -strafe_13);
+        drive.rotate(0.875, rotate_18);
+//        drive.strafe_left(0.875, strafe_19);
+        drive.drive(0.875, drive_20);
+        drive.rotate(0.875, rotate_21);
 
         // 15. OUTTAKE SAMPLE
         while (opModeIsActive() && slides.getPosition() <= slides.highOuttakePos-outtake_adjust){

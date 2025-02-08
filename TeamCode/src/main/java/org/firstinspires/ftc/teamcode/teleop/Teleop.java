@@ -29,6 +29,8 @@
 
 package org.firstinspires.ftc.teamcode.teleop;
 
+import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -38,37 +40,11 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.hardware.ListAverage;
 import org.firstinspires.ftc.teamcode.hardware.Rotate;
 import org.firstinspires.ftc.teamcode.hardware.Slides;
-
-/*
- * This file contains an example of a Linear "OpMode".
- * An OpMode is a 'program' that runs in either the autonomous or the teleop period of an FTC match.
- * The names of OpModes appear on the menu of the FTC Driver Station.
- * When a selection is made from the menu, the corresponding OpMode is executed.
- *
- * This particular OpMode illustrates driving a 4-motor Omni-Directional (or Holonomic) robot.
- * This code will work with either a Mecanum-Drive or an X-Drive train.
- * Both of these drives are illustrated at https://gm0.org/en/latest/docs/robot-design/drivetrains/holonomic.html
- * Note that a Mecanum drive must display an X roller-pattern when viewed from above.
- *
- * Also note that it is critical to set the correct rotation direction for each motor.  See details below.
- *
- * Holonomic drives provide the ability for the robot to move in three axes (directions) simultaneously.
- * Each motion axis is controlled by one Joystick axis.
- *
- * 1) Axial:    Driving forward and backward               Left-joystick Forward/Backward
- * 2) Lateral:  Strafing right and left                     Left-joystick Right and Left
- * 3) Yaw:      Rotating Clockwise and counter clockwise    Right-joystick Right and Left
- *
- * This code is written assuming that the right-side motors need to be reversed for the robot to drive forward.
- * When you first test your robot, if it moves backward when you push the left stick forward, then you must flip
- * the direction of all 4 motors (see code below).
- *
- * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
- * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
- */
-
+import org.firstinspires.ftc.teamcode.utilities.PIDF;
+@Config
 @TeleOp(name="TeleOp", group="Linear OpMode")
 public class Teleop extends LinearOpMode {
     Gamepad prevGamepad1 = new Gamepad();
@@ -85,7 +61,14 @@ public class Teleop extends LinearOpMode {
     String slidesState;
     String rotateState;
     Rotate rotate;
-
+    public PIDF leftDistancePIDF;
+    public PIDF rightDistancePIDF;
+    public static double Kp = 0.01;
+    public static double Ki = 0;
+    public static double Kd = 0;
+    public static double Kf = -0.09;
+    double tolerance = 1;
+    public static int targetPosition = 17;
     @Override
     public void runOpMode() {
 
@@ -99,8 +82,8 @@ public class Teleop extends LinearOpMode {
         DcMotor BR = hardwareMap.get(DcMotor.class, "BR");
         CRServo rServo = hardwareMap.get(CRServo.class, "rServo");
         CRServo lServo = hardwareMap.get(CRServo.class, "lServo");
-        sensorDistance1 = hardwareMap.get(DistanceSensor.class, "Distance1");
-        sensorDistance2 = hardwareMap.get(DistanceSensor.class, "Distance 2")
+        sensorDistance1 = hardwareMap.get(Rev2mDistanceSensor.class, "Distance 1");
+        sensorDistance2 = hardwareMap.get(Rev2mDistanceSensor.class, "Distance 2")
 ;
         // ########################################################################################
         // !!!            IMPORTANT Drive Information. Test your motor directions.            !!!!!
@@ -274,8 +257,35 @@ public class Teleop extends LinearOpMode {
                 rServo.setPower(0);
             }
             // ALIGNMENT FOR SPECIMEN
-            if (currentGamepad1.y && !prevGamepad1.y){;
-                while(sensorDistance1.getDistance(DistanceUnit.CM)<7);
+            if (currentGamepad1.y){
+                ListAverage rightAverage = new ListAverage(4);
+                ListAverage leftAverage = new ListAverage(4);
+                rightDistancePIDF = new PIDF(Kp, Ki, Kd, Kf, tolerance);
+                leftDistancePIDF = new PIDF(Kp, Ki, Kd, Kf, tolerance);
+//                double rightCurrentValue = rightAverage.listAverage(sensorDistance1.getDistance(DistanceUnit.CM));
+                double leftCurrentValue = leftAverage.listAverage(sensorDistance2.getDistance(DistanceUnit.CM));
+//                double rightPower = -rightDistancePIDF.update(targetPosition, rightCurrentValue);
+                double leftPower = -leftDistancePIDF.update(targetPosition, leftCurrentValue);
+//                while(opModeIsActive() && sensorDistance1.getDistance(DistanceUnit.CM)!=targetPosition&& sensorDistance2.getDistance(DistanceUnit.CM)!=targetPosition){
+                while(opModeIsActive() && sensorDistance2.getDistance(DistanceUnit.CM) >targetPosition){
+                    leftCurrentValue = leftAverage.listAverage(sensorDistance2.getDistance(DistanceUnit.CM));
+                    leftPower = -leftDistancePIDF.update(targetPosition, leftCurrentValue);
+                    BR.setPower(leftPower);
+                    FR.setPower(leftPower);
+                    BL.setPower(leftPower);
+                    FL.setPower(leftPower);
+//                    telemetry.addData("rightCurrentValue",rightCurrentValue);
+                    telemetry.addData("leftCurrentValue", leftCurrentValue);
+//                    telemetry.addData("rightPower",rightPower);
+                    telemetry.addData("leftPower", leftPower);
+                    telemetry.addData("SizeR", rightAverage.getSize());
+                    telemetry.addData("SizeL", leftAverage.getSize());
+                    telemetry.update();
+                    sleep(10);
+
+                }
+
+
 
             }
 
@@ -299,7 +309,6 @@ public class Teleop extends LinearOpMode {
             telemetry.addData("BR position", BR.getCurrentPosition());
             telemetry.addData("FL position", FL.getCurrentPosition());
             telemetry.addData("Left stick X", currentGamepad2.left_stick_x);
-
             telemetry.update();
 
         }
