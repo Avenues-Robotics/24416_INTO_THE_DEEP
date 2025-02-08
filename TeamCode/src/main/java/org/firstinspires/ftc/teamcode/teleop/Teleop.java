@@ -63,11 +63,12 @@ public class Teleop extends LinearOpMode {
     Rotate rotate;
     public PIDF leftDistancePIDF;
     public PIDF rightDistancePIDF;
-    public static double Kp = 0.005;
+    public static double Kp = 0.01;
     public static double Ki = 0;
     public static double Kd = 0;
     public static double Kf = -0.09;
     double tolerance = 1;
+    public static int targetPosition = 17;
     @Override
     public void runOpMode() {
 
@@ -147,7 +148,6 @@ public class Teleop extends LinearOpMode {
             double axial = -gamepad1.left_stick_y;  // Note: pushing stick forward gives negative value
             double lateral = gamepad1.left_stick_x;
             double yaw = gamepad1.right_stick_x;
-            int targetPosition = 17;
 
             // Combine the joystick requests for each axis-motion to determine each wheel's power.
             // Set up a variable for each drive wheel to save the power level for telemetry.
@@ -258,26 +258,25 @@ public class Teleop extends LinearOpMode {
             }
             // ALIGNMENT FOR SPECIMEN
             if (currentGamepad1.y){
-                ListAverage rightAverage = new ListAverage(10);
-                ListAverage leftAverage = new ListAverage(10);
+                ListAverage rightAverage = new ListAverage(4);
+                ListAverage leftAverage = new ListAverage(4);
                 rightDistancePIDF = new PIDF(Kp, Ki, Kd, Kf, tolerance);
                 leftDistancePIDF = new PIDF(Kp, Ki, Kd, Kf, tolerance);
-                double rightCurrentValue = rightAverage.listAverage(sensorDistance1.getDistance(DistanceUnit.CM));
+//                double rightCurrentValue = rightAverage.listAverage(sensorDistance1.getDistance(DistanceUnit.CM));
                 double leftCurrentValue = leftAverage.listAverage(sensorDistance2.getDistance(DistanceUnit.CM));
-                double rightPower = -rightDistancePIDF.update(targetPosition, rightCurrentValue);
+//                double rightPower = -rightDistancePIDF.update(targetPosition, rightCurrentValue);
                 double leftPower = -leftDistancePIDF.update(targetPosition, leftCurrentValue);
-                while(opModeIsActive() && sensorDistance1.getDistance(DistanceUnit.CM)>targetPosition && sensorDistance2.getDistance(DistanceUnit.CM)>targetPosition){
-                    rightCurrentValue = rightAverage.listAverage(sensorDistance1.getDistance(DistanceUnit.CM));
+//                while(opModeIsActive() && sensorDistance1.getDistance(DistanceUnit.CM)!=targetPosition&& sensorDistance2.getDistance(DistanceUnit.CM)!=targetPosition){
+                while(opModeIsActive() && sensorDistance2.getDistance(DistanceUnit.CM) >targetPosition){
                     leftCurrentValue = leftAverage.listAverage(sensorDistance2.getDistance(DistanceUnit.CM));
-                    rightPower = -rightDistancePIDF.update(targetPosition, rightCurrentValue);
                     leftPower = -leftDistancePIDF.update(targetPosition, leftCurrentValue);
-                    BR.setPower(rightPower);
-                    FR.setPower(rightPower);
+                    BR.setPower(leftPower);
+                    FR.setPower(leftPower);
                     BL.setPower(leftPower);
                     FL.setPower(leftPower);
-                    telemetry.addData("rightCurrentValue",rightCurrentValue);
+//                    telemetry.addData("rightCurrentValue",rightCurrentValue);
                     telemetry.addData("leftCurrentValue", leftCurrentValue);
-                    telemetry.addData("rightPower",rightPower);
+//                    telemetry.addData("rightPower",rightPower);
                     telemetry.addData("leftPower", leftPower);
                     telemetry.addData("SizeR", rightAverage.getSize());
                     telemetry.addData("SizeL", leftAverage.getSize());
